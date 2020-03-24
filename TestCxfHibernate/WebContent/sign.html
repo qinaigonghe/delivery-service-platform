@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta content="yes" name="apple-touch-fullscreen">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta content="telephone=no" name="format-detection">
+    <meta content="中集速运、中集速运" name="keywords">
+    <meta content="中集速运、中集速运" name="description">
+    <meta content="Li Zhen Ya Team" name="author">
+    <script type="text/javascript" src="theme/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="theme/js/jquerysession.js"></script>
+    <title>中集速运-登录</title>
+    <link type="text/css" rel="stylesheet" href="theme/css/core.css">
+    <link type="text/css" rel="stylesheet" href="theme/css/home.css">
+    <link type="text/css" rel="stylesheet" href="theme/css/Mycss.css">
+</head>
+<body>
+
+<header id="lzy-header" style="width:100%">
+    <div style="margin:20px;">
+        <div style="margin-left:150px;margin-top:30px;">
+            <h1>
+                <a href="welcome.html"><img src="theme/img/logo/logo1.png" title="" about="" name=""></a>
+            </h1>
+        </div>
+    </div>
+</header>
+
+
+<hr>
+<br>
+<section>
+    <div class="lzy-content" id="lzy-adaption">
+        <div class="lzy-boxes">
+            <div class="lzy-shadow">
+                <h2><i></i>登录</h2>
+            </div>
+
+            <div class="login_m">
+                <div class="login_boder">
+                    <div class="login_padding">
+                        <h2>ID</h2>
+                        <label>
+                            <input type="text" id="userID" class="txt_input txt_input2" value="" placeholder="">
+                        </label>
+                        <h2>密码</h2>
+                        <label>
+                            <input type="password" name="textfield2" id="userpwd" class="txt_input">
+                        </label>
+
+                        <div class="rem_sub">
+                            <div class="clearfix">
+                                <div class="rem_sub_l fl"><input type="checkbox" name="checkbox" id="save_me"
+                                                                 placeholder=""><label for="checkbox">记住我的登录状态</label>
+                                </div>
+                                <div class="forgot fr"><a href="javascript:void(0);">忘记密码?</a></div>
+                                <div>
+                                    <button id="button"
+                                            style="width: 260px; height: 40px; margin-right:30px ;margin-top: 10px; background:#e48f02 ;">
+                                        登陆
+                                    </button>
+                                </div>
+                                <div class="reg"><a href="#" id="register">立即注册</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="height:100px;"></div>
+    </div>
+
+</section>
+
+<footer>
+    <div class="lzy-adaption">
+        <div class="lzy-copyright">
+            <p>Copyright © 2019 anli-2. All Rights Reserved.</p>
+        </div>
+    </div>
+</footer>
+<script>
+    $(function () {
+
+        $("#button").click(function () {
+            var uid = $("input#userID").val();
+            var pwd = $("input#userpwd").val();
+            //alert("username--" + uid + "  " + "passwd--" + pwd );
+            $.ajax({
+                url: '/TestCxfHibernate/REST/Misc/doLogin/' + uid + '/' + pwd + '?_type=json',
+                type: "GET",
+                dataType: "html",
+                contentType: 'application/json;charset=UTF-8',
+                success: function (r) {
+                    var r = eval('(' + r + ')');
+                    //alert(r);
+                    if (JSON.stringify(r.UID) == $("input#userID").val() && JSON.stringify(r.PWD) == $("input#userpwd").val()) {
+                        if (JSON.stringify(r.status) == 1) {
+                            $.session.set('admin', r.name);
+                            alert("经验证，" + $.session.get('admin') + "你是本系统管理员用户，欢迎进入工作页面！");
+                            window.location.href = "admin-index.html";
+                        }else {
+                            alert("您没有权限登陆！");
+                        }
+                    } else {
+                        //$(window).attr('location','$("#loginbutton").attr("href")');
+                        alert("账号不存在或密码错误！");
+                    }
+                },
+                error: function () {
+                    alert("操作失败！请重新登陆");
+                }
+            });
+        });
+
+        $("#register").click(function () {
+            alert("请登录管理员后进行用户注册！");
+        });
+    });
+</script>
+</body>
+</html>
