@@ -41,4 +41,25 @@ public class ExpressSheetDao extends BaseDao<ExpressSheet,String> {
 		list = findBy("ID", true, Restrictions.sqlRestriction(sql));		
 		return list;
 	}
+	
+	public List<ExpressSheet> findBySenderAndStatus(int id) {
+		String sql = "Status in (0,1) and Sender = " + id;
+		List<ExpressSheet> list = new ArrayList<ExpressSheet>();
+		list = findBy("ID", true, Restrictions.sqlRestriction(sql));
+		return list;
+	}
+
+	public List<ExpressSheet> findBySender(int id) {
+		String sql = "Sender = " + id;
+		List<ExpressSheet> list = new ArrayList<ExpressSheet>();
+		list = findBy("ID", true, Restrictions.sqlRestriction(sql));
+		return list;
+	}
+
+	public List<ExpressSheet> findByReceiver(int id) {
+		String sql = "Recever = " + id;
+		List<ExpressSheet> list = new ArrayList<ExpressSheet>();
+		list = findBy("ID", true, Restrictions.sqlRestriction(sql));
+		return list;
+	}
 }

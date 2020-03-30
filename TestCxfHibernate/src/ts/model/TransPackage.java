@@ -175,6 +175,21 @@ public class TransPackage implements Serializable {
 		}
 	}
 	
+	public static final class STATUS{
+//	    0,新建 Create
+//	    1,打包 pack
+//	    2,转运 transport
+//	    3,分拣 Sorting
+//	    4,揽收 Collect
+//	    5,派送 Delivery
+        public static final int STATUS_CREATED = 0;
+        public static final int STATUS_PACK= 1;
+        public static final int STATUS_TRANSPORT = 2;
+        public static final int STATUS_SORTING = 3;
+        public static final int STATUS_COLLECT = 4;
+        public static final int STATUS_DELIVERY = 5;
+    }
+	
 	@Transient	
 	private boolean _saved = false;
 	

@@ -164,7 +164,20 @@ public class UserInfo implements Serializable {
 	public String toString() {
 		return toString(false);
 	}
-	
+	public static final class URull{
+//      0,休息 Sleep
+//      1,揽收 Collect
+//      2,拆包 Unpacking 
+//      3,转运 transport
+//      4,派送 Delivery
+//      5,打包 packing
+        public static final int URull_SLEEP = 0;
+        public static final int URull_COLLECT = 1;
+        public static final int URull_UNPACKING = 2;
+        public static final int URull_TRANSPORT = 3;
+        public static final int URull_DELIVERY = 4;
+        public static final int URull_PACKING = 5;
+    }
 	public String toString(boolean idOnly) {
 		if (idOnly) {
 			return String.valueOf(getUID());

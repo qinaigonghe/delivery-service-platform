@@ -5,13 +5,17 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
+import ts.daoImpl.CustomerDao;
 import ts.daoImpl.CustomerInfoDao;
 import ts.daoImpl.RegionDao;
 import ts.daoImpl.TransNodeDao;
+import ts.daoImpl.UserInfoDao;
 import ts.model.CodeNamePair;
+import ts.model.Customer;
 import ts.model.CustomerInfo;
 import ts.model.Region;
 import ts.model.TransNode;
+import ts.model.UserInfo;
 import ts.serviceInterface.IMiscService;
 
 public class MiscService implements IMiscService{
@@ -20,7 +24,17 @@ public class MiscService implements IMiscService{
 	private TransNodeDao transNodeDao;
 	private RegionDao regionDao;
 	private CustomerInfoDao customerInfoDao;
-
+	private CustomerDao customerDao;
+	private UserInfoDao userInfoDao;
+	
+	public UserInfoDao getUserInfoDao() {
+		return userInfoDao;
+	}
+	
+	public void setUserInfoDao(UserInfoDao dao) {
+		this.userInfoDao=dao;
+	}
+	
 	public TransNodeDao getTransNodeDao() {
 		return transNodeDao;
 	}
@@ -44,26 +58,20 @@ public class MiscService implements IMiscService{
 	public void setCustomerInfoDao(CustomerInfoDao dao) {
 		this.customerInfoDao = dao;
 	}
+	
+	public CustomerDao getCustomerDao() {
+		return customerDao;
+	}
 
+	public void setCustomerDao(CustomerDao dao) {
+		this.customerDao = dao;
+	}
+	
 	public MiscService(){
-//		nodes = new TransNodeCatalog();
-//		nodes.Load();
-//		regions = new RegionCatalog();
-//		regions.Load();
-	}
 
-	@Override
-	public TransNode getNode(String code) {
-		// TODO Auto-generated method stub
-		return null;
 	}
-
-	@Override
-	public List<TransNode> getNodesList(String regionCode, int type) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
+//==========================customerinfo==========================
 	@Override
 	public List<CustomerInfo> getCustomerListByName(String name) {
 //		List<CustomerInfo> listci = customerInfoDao.findByName(name);
@@ -116,7 +124,39 @@ public class MiscService implements IMiscService{
 	}
 
 	@Override
-	public List<CodeNamePair> getProvinceList() {		
+	public Response updateCustomerInfo(CustomerInfo obj) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+//======================customer=======================
+	@Override
+	public Response customerRegister(Customer customer) {
+		customerDao.save(customer);
+		int ID = customerDao.findByLimit(customer).getID();
+		return Response.ok(ID).header("EntityClass", "register").build();
+	}
+	
+	@Override
+	public Response doCustomerLogin(int id, String pwd) {
+		Customer customer = customerDao.get(id);
+		if(customer.getPassword().equals(pwd)) {
+			System.out.println("right");
+			return Response.ok(customer).header("EntityClass", "customer").build();
+		}
+		// TODO Auto-generated method stub
+		return Response.ok(customer).header("EntityClass", "customer").build();
+	}
+
+	@Override
+	public void doCustomerLogOut(int uid) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+//===========================region=============================
+	@Override
+	public List<CodeNamePair> getProvinceList() {	
 		List<Region> listrg = regionDao.getProvinceList();
 		List<CodeNamePair> listCN = new ArrayList<CodeNamePair>();
 		for(Region rg : listrg){
@@ -159,15 +199,36 @@ public class MiscService implements IMiscService{
 	}
 
 	@Override
-	public void CreateWorkSession(int uid) {
+	public TransNode getNode(String code) {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
 
 	@Override
-	public boolean doLogin(int uid, String pwd) {
+	public List<TransNode> getNodesList(String regionCode, int type) {
 		// TODO Auto-generated method stub
-		return true;
+		return null;
+	}
+//====================user======================
+	@Override
+	public Response register(UserInfo userInfo) {
+		userInfoDao.save(userInfo);
+		int UID = userInfoDao.findByLimit(userInfo).getUID();
+		return Response.ok(UID).header("EntityClass", "register").build();
+	}
+	
+	
+	@Override
+	public Response doLogin(int uid, String pwd) {
+		System.out.println("do1");
+		UserInfo userInfo=userInfoDao.findByID(uid);
+		System.out.println("do2");
+		if(userInfo.getPWD().equals(pwd)) {
+			System.out.println("right");		
+			return Response.ok(userInfo).header("EntityClass", "userInfo").build();
+		}
+		// TODO Auto-generated method stub
+		return Response.ok(userInfo).header("EntityClass", "userInfo").build();
 	}
 
 	@Override
@@ -175,7 +236,12 @@ public class MiscService implements IMiscService{
 		// TODO Auto-generated method stub
 		
 	}
-
+//==================other======================
+	@Override
+	public void CreateWorkSession(int uid) {
+		// TODO Auto-generated method stub
+		
+	}
 	@Override
 	public void RefreshSessionList() {
 		// TODO Auto-generated method stub

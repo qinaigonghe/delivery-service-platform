@@ -8,11 +8,11 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
 	http://www.springframework.org/schema/beans/spring-beans.xsd
 	http://www.springframework.org/schema/util  
-     http://www.springframework.org/schema/util/spring-util-4.0.xsd 
-     http://www.springframework.org/schema/context
-     http://www.springframework.org/schema/context/spring-context-4.0.xsd
-     http://www.springframework.org/schema/tx
-     http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+    http://www.springframework.org/schema/util/spring-util-4.0.xsd 
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-4.0.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
 	http://cxf.apache.org/jaxrs 
 	http://cxf.apache.org/schemas/jaxrs.xsd">
 
@@ -57,6 +57,7 @@
 	<bean id="transNodeDao" class="ts.daoImpl.TransNodeDao">
 		<property name="sessionFactory" ref="sessionFactory"></property>
 	</bean>
+
 	<bean id="regionDao" class="ts.daoImpl.RegionDao">
 		<property name="sessionFactory" ref="sessionFactory"></property>
 	</bean>
@@ -64,6 +65,13 @@
 		<property name="sessionFactory" ref="sessionFactory"></property>
 		<property name="regionDao" ref="regionDao"></property>
 	</bean>
+	
+	
+	
+	<bean id="customerDao" class="ts.daoImpl.CustomerDao">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
 	<bean id="expressSheetDao" class="ts.daoImpl.ExpressSheetDao">
 		<property name="sessionFactory" ref="sessionFactory"></property>
 		<property name="regionDao" ref="regionDao"></property>
@@ -85,6 +93,8 @@
 				<property name="transNodeDao" ref="transNodeDao"></property>	<!-- 配置MiscService中的属性dao -->
 				<property name="regionDao" ref="regionDao"></property>
 				<property name="customerInfoDao" ref="customerInfoDao"></property>
+				<property name="customerDao" ref="customerDao"></property>
+				<property name="userInfoDao" ref="userInfoDao"></property>
 			</bean>
 			<bean class="ts.serviceImpl.DomainService">
 				<property name="expressSheetDao" ref="expressSheetDao"></property>	<!-- 配置DomainService中的属性dao -->

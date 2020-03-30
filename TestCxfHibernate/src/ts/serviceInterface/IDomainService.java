@@ -131,7 +131,7 @@ public interface IDomainService {
     @GET
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/getCustomerInfo/{id}") 
-	public List<CustomerInfo> getCustomerInfo(@PathParam("id")String id);
+	public Response getCustomerInfo(@PathParam("id")String id);
 	// 包裹坐标信息操作访问接口=======================================================================
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -169,7 +169,7 @@ public interface IDomainService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Path("/MoveExpressFromPackage/{expressSheetID}/{sourcePkgId}")
-	public boolean MoveExpressFromPackage(@PathParam("expressSheetID") String expressSheetID,
+	public Response MoveExpressFromPackage(@PathParam("expressSheetID") String expressSheetID,
 			@PathParam("sourcePkgId") String sourcePkgId);
 
 	// 快件移入包裹
@@ -177,7 +177,7 @@ public interface IDomainService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Path("/MoveExpressIntoPackage/{expressSheetID}/{targetPkgId}")
-	public boolean MoveExpressIntoPackage(@PathParam("expressSheetID") String expressSheetID,
+	public Response MoveExpressIntoPackage(@PathParam("expressSheetID") String expressSheetID,
 			@PathParam("targetPkgId") String targetPkgId);
 
 	// 快递员信息接口=======================================================================

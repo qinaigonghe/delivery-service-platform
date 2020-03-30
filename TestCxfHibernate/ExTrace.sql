@@ -29,7 +29,13 @@ CREATE TABLE Region (RegionCode char(6) NOT NULL, Prv varchar(32), Cty varchar(3
 CREATE TABLE CustomerInfo (ID int(10) NOT NULL AUTO_INCREMENT, Name varchar(16), TelCode varchar(24), Department varchar(64), RegionCode char(6), Address varchar(64), PostCode int(10), PRIMARY KEY (ID)) CHARACTER SET UTF8;
 CREATE TABLE UsersPackage (SN int(10) NOT NULL AUTO_INCREMENT, UserUID int(10) NOT NULL, PackageID char(24) NOT NULL, PRIMARY KEY (SN)) CHARACTER SET UTF8;
 CREATE TABLE PackageRoute (SN int(10) NOT NULL AUTO_INCREMENT, PackageID char(24) NOT NULL, x float NOT NULL, y float NOT NULL, tm datetime NOT NULL, PRIMARY KEY (SN)) CHARACTER SET UTF8;
+CREATE TABLE Customer (ID int(10) NOT NULL AUTO_INCREMENT, Name varchar(16), Password varchar(24), PRIMARY KEY (ID)) CHARACTER SET UTF8;
 
+insert into customer value(1,"高虎群","123456");
+insert into customer value(2,"曹丹莹","123456");
+insert into customer value(3,"李昊","123");
+insert into customer value(4,"于亚辉","1");
+insert into customer value(5,"王驰鑫","");
 ALTER TABLE PackageRoute ADD INDEX packageroute (PackageID), ADD CONSTRAINT packageroute FOREIGN KEY (PackageID) REFERENCES TransPackage (ID);
 ALTER TABLE UsersPackage ADD INDEX FKUsersPacka497996 (UserUID), ADD CONSTRAINT FKUsersPacka497996 FOREIGN KEY (UserUID) REFERENCES UserInfo (UID);
 ALTER TABLE UsersPackage ADD INDEX FKUsersPacka5233 (PackageID), ADD CONSTRAINT FKUsersPacka5233 FOREIGN KEY (PackageID) REFERENCES TransPackage (ID);

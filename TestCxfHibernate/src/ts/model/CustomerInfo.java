@@ -166,7 +166,7 @@ public class CustomerInfo implements Serializable {
 			return sb.toString();
 		}
 	}
-
+	
 	@Transient	
 	private String regionString;
 	public void setRegionString(String value) {
