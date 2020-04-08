@@ -123,10 +123,16 @@ public class MiscService implements IMiscService{
 		}
 	}
 
-	@Override
+/*	@Override
 	public Response updateCustomerInfo(CustomerInfo obj) {
 		// TODO Auto-generated method stub
 		return null;
+	}*/
+	//********************************yyh修改的***********3/31**
+	@Override
+	public Response updateCustomerInfo(CustomerInfo obj) {
+		customerInfoDao.update(obj);
+		return Response.ok(obj).header("EntityClass", "updateCustomerInfo").build();
 	}
 	
 //======================customer=======================
@@ -135,6 +141,7 @@ public class MiscService implements IMiscService{
 		customerDao.save(customer);
 		int ID = customerDao.findByLimit(customer).getID();
 		return Response.ok(ID).header("EntityClass", "register").build();
+		//return Response.ok(customer).header("EntityClass", "R_CustomerInfo").build(); 
 	}
 	
 	@Override
@@ -198,10 +205,17 @@ public class MiscService implements IMiscService{
 		return regionDao.getFullNameRegionByID(code);
 	}
 
-	@Override
+	/*@Override
 	public TransNode getNode(String code) {
 		// TODO Auto-generated method stub
 		return null;
+	}*/
+	//yyh修改的*****************************************3/31
+	@Override
+	public TransNode getNode(String code) {
+		// TODO Auto-generated method stub
+		TransNode node = transNodeDao.get(code);
+		return node;
 	}
 
 	@Override
@@ -209,6 +223,23 @@ public class MiscService implements IMiscService{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	//yyh修改的，查询网点信息*************3/31
+	@Override
+	public List<TransNode> getNodesList(String code) {
+		// TODO Auto-generated method stub
+		TransNode node = transNodeDao.get(code);
+		List<TransNode> tt = new ArrayList<TransNode>();
+		tt.add(node);
+		return tt;
+	}
+	
+	//yyh修改，更新网点信息**************3/31
+	@Override
+	public Response updateTransNode(TransNode obj) {
+		transNodeDao.update(obj);
+		return Response.ok(obj).header("EntityClass", "updateTransNode").build();
+	}
+	
 //====================user======================
 	@Override
 	public Response register(UserInfo userInfo) {
@@ -217,18 +248,17 @@ public class MiscService implements IMiscService{
 		return Response.ok(UID).header("EntityClass", "register").build();
 	}
 	
-	
 	@Override
 	public Response doLogin(int uid, String pwd) {
 		System.out.println("do1");
-		UserInfo userInfo=userInfoDao.findByID(uid);
-		System.out.println("do2");
+		UserInfo userInfo=userInfoDao.get(uid);
 		if(userInfo.getPWD().equals(pwd)) {
 			System.out.println("right");		
 			return Response.ok(userInfo).header("EntityClass", "userInfo").build();
-		}
+		}else {
 		// TODO Auto-generated method stub
 		return Response.ok(userInfo).header("EntityClass", "userInfo").build();
+		}
 	}
 
 	@Override
@@ -239,12 +269,10 @@ public class MiscService implements IMiscService{
 //==================other======================
 	@Override
 	public void CreateWorkSession(int uid) {
-		// TODO Auto-generated method stub
-		
+	
 	}
 	@Override
 	public void RefreshSessionList() {
-		// TODO Auto-generated method stub
 		
 	}
 }

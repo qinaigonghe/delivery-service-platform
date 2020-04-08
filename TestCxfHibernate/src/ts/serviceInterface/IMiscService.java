@@ -31,6 +31,18 @@ public interface IMiscService {
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("/getNodesList/{RegionCode}/{Type}") 
 	public List<TransNode> getNodesList(@PathParam("RegionCode")String regionCode, @PathParam("Type")int type);
+    
+    //yyh修改的，新加的获得营业网点信息*******3/31
+    @GET
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Path("/getNodesList/{code}") 
+	public List<TransNode> getNodesList(@PathParam("code")String code);
+    
+    //yyh新加的修改营业网点信息***************3/31
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateTransNode")
+    public Response updateTransNode(TransNode obj);
 
     //=====================客户信息=======================
     @GET

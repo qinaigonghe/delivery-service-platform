@@ -17,6 +17,7 @@ import java.io.Serializable;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 @Entity
 @org.hibernate.annotations.Proxy(lazy=false)
 @Table(name="UserInfo")
@@ -151,7 +152,7 @@ public class UserInfo implements Serializable {
 	public String getTransPackageID() {
 		return transPackageID;
 	}
-	
+	@XmlTransient
 	public void setUsersPackage(java.util.Set<UsersPackage> value) {
 		this.usersPackage = value;
 	}

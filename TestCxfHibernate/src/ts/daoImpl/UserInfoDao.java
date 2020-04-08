@@ -3,8 +3,6 @@ package ts.daoImpl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.hibernate.criterion.Restrictions;
 
 import ts.daoBase.BaseDao;
@@ -17,10 +15,9 @@ public class UserInfoDao extends BaseDao<UserInfo, Integer> {
 	}
 	
 	//=======================Ìí¼Ó========================
-	@XmlTransient 
+	 
 	public UserInfo get(int id) {
-	        UserInfo userInfo=super.get(id);
-
+	        UserInfo  userInfo = super.get(id);	       
 	        return userInfo;
 	    }
 
@@ -38,7 +35,7 @@ public class UserInfoDao extends BaseDao<UserInfo, Integer> {
 	        list = findBy("UID", true, Restrictions.sqlRestriction(sql));
 	        return list.get(list.size() - 1);
 	    }
-	    @XmlTransient
+
 	    public UserInfo findByID(int id) {
 	        String sql = "UID = '" + id + "'";
 	        List<UserInfo> list = new ArrayList<UserInfo>();
@@ -54,5 +51,14 @@ public class UserInfoDao extends BaseDao<UserInfo, Integer> {
 	    	
 			return null;
 	       
+	    }
+	    public UserInfo findBytranspkg(String id) {
+	        String sql = "transPackageID = " + id ;
+	        List<UserInfo> list = new ArrayList<UserInfo>();
+	        list = findBy("UID",true,Restrictions.sqlRestriction(sql));
+	        if(list.isEmpty()) {
+	            return null;
+	        }
+	        return list.get(0);
 	    }
 }

@@ -48,16 +48,12 @@
 		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
-	<tx:annotation-driven transaction-manager="transactionManager"
-		proxy-target-class="true" />
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
 
-	<bean id="userInfoDao" class="ts.daoImpl.UserInfoDao">
-		<property name="sessionFactory" ref="sessionFactory"></property>
-	</bean>
+	
 	<bean id="transNodeDao" class="ts.daoImpl.TransNodeDao">
 		<property name="sessionFactory" ref="sessionFactory"></property>
 	</bean>
-
 	<bean id="regionDao" class="ts.daoImpl.RegionDao">
 		<property name="sessionFactory" ref="sessionFactory"></property>
 	</bean>
@@ -65,8 +61,6 @@
 		<property name="sessionFactory" ref="sessionFactory"></property>
 		<property name="regionDao" ref="regionDao"></property>
 	</bean>
-	
-	
 	
 	<bean id="customerDao" class="ts.daoImpl.CustomerDao">
 		<property name="sessionFactory" ref="sessionFactory"></property>
@@ -85,7 +79,16 @@
 	<bean id="transPackageContentDao" class="ts.daoImpl.TransPackageContentDao">
 		<property name="sessionFactory" ref="sessionFactory"></property>
 	</bean>
-
+	<bean id="userInfoDao" class="ts.daoImpl.UserInfoDao">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="packageRouteDao" class="ts.daoImpl.PackageRouteDao">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="usersPackageDao" class="ts.daoImpl.UsersPackageDao">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
 	<!-- REST服务的注解例子 -->
 	<jaxrs:server id="Service" address="/REST">
 		<jaxrs:serviceBeans>
@@ -101,8 +104,11 @@
 				<property name="transPackageDao" ref="transPackageDao"></property>
 				<property name="transHistoryDao" ref="transHistoryDao"></property>
 				<property name="transPackageContentDao" ref="transPackageContentDao"></property>
+				<property name="packageRouteDao" ref="packageRouteDao"></property>
 				<property name="userInfoDao" ref="userInfoDao"></property>
-				
+				<property name="regionDao" ref="regionDao"></property>
+				<property name="customerInfoDao" ref="customerInfoDao"></property>
+				<property name="usersPackageDao" ref="usersPackageDao"></property>
 			</bean>
 		</jaxrs:serviceBeans>
 

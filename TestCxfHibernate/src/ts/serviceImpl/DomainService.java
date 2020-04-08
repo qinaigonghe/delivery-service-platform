@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import ts.daoImpl.CustomerInfoDao;
 import ts.daoImpl.ExpressSheetDao;
@@ -59,6 +60,33 @@ public class DomainService implements IDomainService {
 	private PackageRouteDao packageRouteDao;
 	private UsersPackageDao usersPackageDao;
 	
+	public RegionDao getRegionDao() {
+		return regionDao;
+	}
+	public void setRegionDao(RegionDao dao) {
+		this.regionDao=dao;
+	}
+	
+	public CustomerInfoDao getCustomerInfoDao() {
+		return customerInfoDao;
+	}
+	public void setCustomerInfoDao(CustomerInfoDao dao) {
+		this.customerInfoDao=dao;
+	}
+	
+	public UsersPackageDao getUsersPackageDao() {
+		return usersPackageDao;
+	}
+	public void setUsersPackageDao(UsersPackageDao dao) {
+		this.usersPackageDao=dao;
+	}
+	
+	public PackageRouteDao getPackageRouteDao() {
+		return packageRouteDao;
+	}
+	public void setPackageRouteDao(PackageRouteDao dao) {
+		this.packageRouteDao=dao;
+	}
 	public ExpressSheetDao getExpressSheetDao() {
 		return expressSheetDao;
 	}
@@ -99,7 +127,7 @@ public class DomainService implements IDomainService {
 		this.userInfoDao = dao;
 	}
 
-	//±£´æÎÄ¼şµ½Â·¾¶ÏÂ
+	//ä¿å­˜æ–‡ä»¶åˆ°è·¯å¾„ä¸‹
 	private void writeToFile(InputStream ins, String path) {
 		try {
 			OutputStream out = new FileOutputStream(new File(path));
@@ -119,7 +147,7 @@ public class DomainService implements IDomainService {
 	}
 		
 	public Date getCurrentDate() {
-		//²úÉúÒ»¸ö²»´øºÁÃëµÄÊ±¼ä,²»È»,SQLÊ±¼äºÍJAVAÊ±¼ä¸ñÊ½²»Ò»ÖÂ
+		//äº§ç”Ÿä¸€ä¸ªä¸å¸¦æ¯«ç§’çš„æ—¶é—´,ä¸ç„¶,SQLæ—¶é—´å’ŒJAVAæ—¶é—´æ ¼å¼ä¸ä¸€è‡´
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		Date tm = new Date();
 		try {
@@ -145,7 +173,7 @@ public class DomainService implements IDomainService {
 		return list;
 	}
 	
-	//²éÑ¯°ü¹üÖĞµÄ¿ì¼ş
+	//æŸ¥è¯¢åŒ…è£¹ä¸­çš„å¿«ä»¶
 	@Override
 	public List<ExpressSheet> getExpressListInPackage(String packageId){
 		List<ExpressSheet> list = new ArrayList<ExpressSheet>();
@@ -153,19 +181,19 @@ public class DomainService implements IDomainService {
 		return list;		
 	}
 	
-	//¸ù¾İid²éÑ¯¿ì¼ş
+	//æ ¹æ®idæŸ¥è¯¢å¿«ä»¶
 	@Override
 	public Response getExpressSheet(String id) {
 		ExpressSheet es = null;
 		try {
 			es = expressSheetDao.get(id);
 		} catch (Exception e) {
-			return Response.ok("²»´æÔÚ¸ÃidµÄ°ü¹ü").header("EntityClass", "ExpressSheet").build();
+			return Response.ok("ä¸å­˜åœ¨è¯¥idçš„åŒ…è£¹").header("EntityClass", "ExpressSheet").build();
 		}
 		return Response.ok(es).header("EntityClass", "ExpressSheet").build();
 	}
 	
-	//±£´æ¿ì¼şĞÅÏ¢
+	//ä¿å­˜å¿«ä»¶ä¿¡æ¯
 	@Override
 	public Response newExpressSheet(String id, int uid) {
 		ExpressSheet es = null;
@@ -174,7 +202,7 @@ public class DomainService implements IDomainService {
 		} catch (Exception e1) {}
 
 		if(es != null){
-			return Response.ok("¿ì¼şÔËµ¥ĞÅÏ¢ÒÑ¾­´æÔÚ!\nÎŞ·¨´´½¨!").header("EntityClass", "E_ExpressSheet").build(); //ÒÑ¾­´æÔÚ
+			return Response.ok("å¿«ä»¶è¿å•ä¿¡æ¯å·²ç»å­˜åœ¨!\næ— æ³•åˆ›å»º!").header("EntityClass", "E_ExpressSheet").build(); //å·²ç»å­˜åœ¨
 		}
 		try{
 			String pkgId = userInfoDao.get(uid).getReceivePackageID();
@@ -189,7 +217,7 @@ public class DomainService implements IDomainService {
 //			pkg_add.setExpress(nes);
 //			nes.getTransPackageContent().add(pkg_add);
 			expressSheetDao.save(nes);
-			//·Åµ½ÊÕ¼ş°ü¹üÖĞ
+			//æ”¾åˆ°æ”¶ä»¶åŒ…è£¹ä¸­
 			MoveExpressIntoPackage(nes.getID(),pkgId);
 			return Response.ok(nes).header("EntityClass", "ExpressSheet").build(); 
 		}
@@ -199,9 +227,9 @@ public class DomainService implements IDomainService {
 		}
 	}
 	
-	//¸ü¸Ä¿ì¼şĞÅÏ¢£¬Ôö¼Ó°´Ê±¼äË¢ĞÂid
+	//æ›´æ”¹å¿«ä»¶ä¿¡æ¯ï¼Œå¢åŠ æŒ‰æ—¶é—´åˆ·æ–°id
 	@Override
-	public Response saveExpressSheet(ExpressSheet obj) {
+	public Response saveinExpressSheet(ExpressSheet obj) {
 		try{
 			String id = obj.getID();
 			// System.out.println("---------------");
@@ -209,7 +237,7 @@ public class DomainService implements IDomainService {
 			obj.setID(id);
 			//ExpressSheet nes = expressSheetDao.get(obj.getID());
 			if(obj.getStatus() != ExpressSheet.STATUS.STATUS_CREATED){
-				return Response.ok("¿ì¼şÔËµ¥ÒÑ¸¶ÔË!ÎŞ·¨±£´æ¸ü¸Ä!").header("EntityClass", "E_ExpressSheet").build(); 
+				return Response.ok("å¿«ä»¶è¿å•å·²ä»˜è¿!æ— æ³•ä¿å­˜æ›´æ”¹!").header("EntityClass", "E_ExpressSheet").build(); 
 			}
 			expressSheetDao.save(obj);			
 			return Response.ok(obj).header("EntityClass", "R_ExpressSheet").build(); 
@@ -220,13 +248,47 @@ public class DomainService implements IDomainService {
 		}
 	}
 	
-	//ÊÕ¼ş¸ü¸Ä¿ì¼şĞÅÏ¢,update¿ì¼şÓë°ü¹ü×´Ì¬
+	//********yyh:æˆ‘çš„ä¿å­˜å¿«ä»¶å‡½æ•°æ˜¯saveExpressSheet,æˆ‘æ²¡æœ‰newé‚£ä¸ªï¼Œnewé‚£ä¸ªä¸å¤ªé€‚åˆwebçš„å¿«æ·å¡«å•
+	//æˆ‘çš„saveå’Œä½ çš„ä¸å¤ªä¸€æ ·ï¼Œæˆ‘æŠŠæˆ‘çš„saveå…ˆæ³¨é‡Šä¸€ä¸‹ï¼Œä½†æ˜¯æˆ‘è§‰å¾—æœ€å¥½æ”¹ä¸€ä¸‹ä½ çš„saveå‡½æ•°çš„åå­—ï¼ˆä¿ç•™ä½ çš„saveçš„è¯ï¼‰
+	//å› ä¸ºæœåŠ¡å™¨åªè¦æ”¹domainserviceå’Œidomianserviceå°±è¡Œäº†ï¼Œå¦‚æœæˆ‘çš„å‡½æ•°æ”¹çš„è¯htmlä¹Ÿè¦æ”¹ï¼Œæˆ‘çš„htmlå¤ªå¤šå•¦ï¼Œå®¹æ˜“å‡ºé”™
+	/*æˆ‘æŠŠä½ çš„åŸæ¥saveå‡½æ•°æ”¹äº†ä¸‹å‡½æ•°åå­—ï¼Œåœ¨saveåé¢åŠ äº†ä¸ªin
+	 * æˆ‘çš„saveå¦‚ä¸‹ï¼š
+	 * PSï¼šä¸Šé¢é‚£ä¸ªnewæ˜¯é€šè¿‡å¿«é€’å‘˜ç”Ÿæˆå¿«ä»¶ï¼Ÿå°±æ˜¯æ‰¾å¿«é€’å‘˜è´Ÿè´£çš„åŒ…è£¹ï¼Œå†å¾€åŒ…è£¹é‡ŒåŠ è¿å•ï¼Ÿå¯æ˜¯è¿å•ä¸æ˜¯å…ˆäºåŒ…è£¹å­˜åœ¨äº†å—
+	 * è¿˜éœ€è¦åœ¨é‡æ–°ç”Ÿæˆè¿å•å˜›ï¼Ÿ
+	 */
+	@Override
+	public Response saveExpressSheet(ExpressSheet obj) {
+		float plus;
+		float trafee;
+		try{
+			//ExpressSheet nes = expressSheetDao.get(obj.getID());
+			if(obj.getStatus() != ExpressSheet.STATUS.STATUS_CREATED){
+				return Response.ok("å¿«ä»¶å·²å­˜åœ¨!").header("EntityClass", "E_ExpressSheet").build(); 
+			}
+			if(obj.getWeight()>0.5f)
+			{
+				trafee=obj.getTranFee();
+				plus=(obj.getWeight()-0.5f)*4;
+				obj.setTranFee(trafee+plus);
+			}
+			long currentTimeMillis = System.currentTimeMillis();
+			obj.setID(String.valueOf(currentTimeMillis).substring(0, 12));
+			expressSheetDao.save(obj);			
+			return Response.ok(obj).header("EntityClass", "R_ExpressSheet").build(); 
+		}
+		catch(Exception e)
+		{
+			return Response.serverError().entity(e.getMessage()).build(); 
+		}
+	}
+	
+	//æ”¶ä»¶æ›´æ”¹å¿«ä»¶ä¿¡æ¯,updateå¿«ä»¶ä¸åŒ…è£¹çŠ¶æ€
 	@Override
 	public Response ReceiveExpressSheetId(String id, int uid) {
 		try{
 			ExpressSheet nes = expressSheetDao.get(id);
 			if(nes.getStatus() != ExpressSheet.STATUS.STATUS_CREATED){
-				return Response.ok("¿ì¼şÔËµ¥×´Ì¬´íÎó!ÎŞ·¨ÊÕ¼ş!").header("EntityClass", "E_ExpressSheet").build(); 
+				return Response.ok("å¿«ä»¶è¿å•çŠ¶æ€é”™è¯¯!æ— æ³•æ”¶ä»¶!").header("EntityClass", "E_ExpressSheet").build(); 
 			}
 			nes.setAccepter(String.valueOf(uid));
 			nes.setAccepteTime(getCurrentDate());
@@ -236,7 +298,7 @@ public class DomainService implements IDomainService {
 			TransPackageContent transPackageContent = new TransPackageContent();
 			transPackageContent.setExpress(nes);
 			transPackageContent.setPkg(transPackageDao.get(userInfoDao.get(uid).getReceivePackageID()));
-			// ¸ü¸Ä°ü¹üÄÚÈİÎªÒÆÈë°ü¹ü×´Ì¬
+			// æ›´æ”¹åŒ…è£¹å†…å®¹ä¸ºç§»å…¥åŒ…è£¹çŠ¶æ€
 			transPackageContent.setStatus(TransPackageContent.STATUS.STATUS_ACTIVE);
 			transPackageContentDao.save(transPackageContent);
 
@@ -249,94 +311,99 @@ public class DomainService implements IDomainService {
 	}
 	
 	
-	//ÅÉËÍ£¿
+	//æ´¾é€ï¼Ÿ
 	@Override
 	public Response DispatchExpressSheet(String id, int uid) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
-	//½«¿ì¼şĞÅÏ¢´ò°üÖÁ°ü¹ü,Ô­º¯Êı¶¼Ã»ÓĞ¿ì¼şĞÅÏ¢£¬ĞŞ¸ÄÍêÉÆÂß¼­
+	//å°†å¿«ä»¶ä¿¡æ¯æ‰“åŒ…è‡³åŒ…è£¹,åŸå‡½æ•°éƒ½æ²¡æœ‰å¿«ä»¶ä¿¡æ¯ï¼Œä¿®æ”¹å®Œå–„é€»è¾‘
 	public Response MoveExpressIntoPackage(String id, String targetPkgId) {
 		TransPackage targetPkg = transPackageDao.get(targetPkgId);
 		ExpressSheet expressSheet = expressSheetDao.get(id);
 		if (expressSheet.getStatus() == ExpressSheet.STATUS.STATUS_SORTING) {
-			expressSheet.setStatus(ExpressSheet.STATUS.STATUS_TRANSPORT);		// ×ªÔË×´Ì¬
+			expressSheet.setStatus(ExpressSheet.STATUS.STATUS_TRANSPORT);		// è½¬è¿çŠ¶æ€
 			expressSheetDao.update(expressSheet);
 			TransPackageContent pkg_add = new TransPackageContent();
 			pkg_add.setPkg(targetPkg);
 			pkg_add.setExpress(expressSheet);
 			pkg_add.setStatus(TransPackageContent.STATUS.STATUS_ACTIVE);
 			transPackageContentDao.save(pkg_add);
-			return Response.ok("¸Ã¿ì¼şÒÑ´ò°ü").header("EntityClass", "P_ExpressSheet").build();
+			return Response.ok("è¯¥å¿«ä»¶å·²æ‰“åŒ…").header("EntityClass", "P_ExpressSheet").build();
+			//ä¿®æ”¹åŸå› åœ¨ä¸‹é¢è¿™ä¸ªå‡½æ•°ä¸­ï¼Œç†ç”±æ˜¯ä¸€æ ·çš„
+			//return Response.ok(pkg_add).header("EntityClass", "P_ExpressSheet").build();
 		} else {
-			return Response.ok("¸Ã¿ì¼şÎŞ·¨´ò°ü").header("EntityClass", "P_ExpressSheet").build();
+			return Response.ok("è¯¥å¿«ä»¶æ— æ³•æ‰“åŒ…").header("EntityClass", "P_ExpressSheet").build();
 		}
 	}
 	
-	//´Ó°ü¹üÖĞÒÆ³ö¿ì¼ş£¬Ìí¼Ó¿ì¼şĞÅÏ¢µÄĞŞ¸Ä
+	//ä»åŒ…è£¹ä¸­ç§»å‡ºå¿«ä»¶ï¼Œæ·»åŠ å¿«ä»¶ä¿¡æ¯çš„ä¿®æ”¹
 	public Response MoveExpressFromPackage(String id, String sourcePkgId) {
 		ExpressSheet expressSheet = expressSheetDao.get(id);
 		if (expressSheet == null) {
-			return Response.ok("¿ì¼ş²»´æÔÚ").header("EntityClass", "U_ExpressSheet").build();
+			return Response.ok("å¿«ä»¶ä¸å­˜åœ¨").header("EntityClass", "U_ExpressSheet").build();
 		}
 		int expressSheetStatus = expressSheet.getStatus();
 
-		// µ±°ü¹üÎªĞÂ½¨£¬½»¸¶×´Ì¬Ê±
+		// å½“åŒ…è£¹ä¸ºæ–°å»ºï¼Œäº¤ä»˜çŠ¶æ€æ—¶
 		if (expressSheetStatus == ExpressSheet.STATUS.STATUS_CREATED
 				|| expressSheetStatus == ExpressSheet.STATUS.STATUS_ACCEPT) {
-			return Response.ok("¸Ã¿ì¼şÎŞ·¨´Ó°ü¹üÖĞÒÆ³ö").header("EntityClass", "U_ExpressSheet").build();
+			return Response.ok("è¯¥å¿«ä»¶æ— æ³•ä»åŒ…è£¹ä¸­ç§»å‡º").header("EntityClass", "U_ExpressSheet").build();
 		}
-		// µ±°ü¹üÎª·Ö¼ğ×´Ì¬Ê±
+		// å½“åŒ…è£¹ä¸ºåˆ†æ‹£çŠ¶æ€æ—¶
 		if (expressSheetStatus == ExpressSheet.STATUS.STATUS_SORTING) {
-			return Response.ok("¸Ã¿ì¼şÒÑ¾­´Ó°ü¹üÖĞÒÆ³ö").header("EntityClass", "U_ExpressSheet").build();
+			return Response.ok("è¯¥å¿«ä»¶å·²ç»ä»åŒ…è£¹ä¸­ç§»å‡º").header("EntityClass", "U_ExpressSheet").build();
 		}
 
 		TransPackageContent transPackageContent = transPackageContentDao.get(id, sourcePkgId);
 		if (transPackageContent == null) {
-			return Response.ok("¸Ã¿ì¼ş²»ÔÚ´Ë°ü¹üÖĞ").header("EntityClass", "U_ExpressSheet").build();
+			return Response.ok("è¯¥å¿«ä»¶ä¸åœ¨æ­¤åŒ…è£¹ä¸­").header("EntityClass", "U_ExpressSheet").build();
 		}
 
 		expressSheet.setStatus(ExpressSheet.STATUS.STATUS_SORTING);
 		expressSheetDao.update(expressSheet);
 
-		// ¸ü¸Ä°ü¹üÄÚÈİÎªÒÆ³ö°ü¹ü×´Ì¬
+		// æ›´æ”¹åŒ…è£¹å†…å®¹ä¸ºç§»å‡ºåŒ…è£¹çŠ¶æ€
 		transPackageContent.setStatus(TransPackageContent.STATUS.STATUS_OUTOF_PACKAGE);
 		transPackageContentDao.update(transPackageContent);
-		return Response.ok("¸Ã¿ì¼ş´Ó°ü¹üÖĞÒÆ³ö").header("EntityClass", "U_ExpressSheet").build();
+		return Response.ok("è¯¥å¿«ä»¶ä»åŒ…è£¹ä¸­ç§»å‡º").header("EntityClass", "U_ExpressSheet").build();
+		//è¿™ä¸ªè¿”å›æ±‰å­—çš„è¯ajaxè¿”å›çš„æ˜¯errorï¼Œä½†æ˜¯æ•°æ®åº“åšäº†ç›¸åº”çš„æ›´æ”¹ï¼Œæ‰€ä»¥è¦æ”¹ä¸€ä¸‹returnï¼Œä¸çŸ¥é“æ”¹å®Œå®‰å“
+		//æœ‰æ²¡æœ‰å½±å“                 yyh    4/3
+		//return Response.ok(transPackageContent).header("EntityClass", "U_ExpressSheet").build();
 	}
 	
-	//¿ì¼şÔÚ²»Í¬°ü¹üÒÆ¶¯
+	//å¿«ä»¶åœ¨ä¸åŒåŒ…è£¹ç§»åŠ¨
 	public boolean MoveExpressBetweenPackage(String id, String sourcePkgId, String targetPkgId) {
-		//ĞèÒª¼ÓÈëÊÂÎñ»úÖÆ
+		//éœ€è¦åŠ å…¥äº‹åŠ¡æœºåˆ¶
 		MoveExpressFromPackage(id,sourcePkgId);
 		MoveExpressIntoPackage(id,targetPkgId);
 		return true;
 	}
 	
-	//ÅäËÍ
+	//é…é€
 	@Override
 	public Response DeliveryExpressSheetId(String id, int uid) {
 		try{
 			String pkgId = userInfoDao.get(uid).getDelivePackageID();
 			ExpressSheet nes = expressSheetDao.get(id);
 			if(nes.getStatus() != ExpressSheet.STATUS.STATUS_TRANSPORT){
-				return Response.ok("¿ì¼şÔËµ¥×´Ì¬´íÎó!ÎŞ·¨½»¸¶").header("EntityClass", "E_ExpressSheet").build(); 
+				return Response.ok("å¿«ä»¶è¿å•çŠ¶æ€é”™è¯¯!æ— æ³•äº¤ä»˜").header("EntityClass", "E_ExpressSheet").build(); 
 			}
 			
 			if(transPackageContentDao.getSn(id, pkgId) == 0){
-				//ÁÙÊ±µÄÒ»¸ö´¦Àí·½Ê½,¶ÏÂ·ÁË°ü¹üµÄ´«µİ¹ı³Ì,×Ô¼ºµÄ»õÀºµ¹ÌÚÒ»ÏÂ
+				//ä¸´æ—¶çš„ä¸€ä¸ªå¤„ç†æ–¹å¼,æ–­è·¯äº†åŒ…è£¹çš„ä¼ é€’è¿‡ç¨‹,è‡ªå·±çš„è´§ç¯®å€’è…¾ä¸€ä¸‹
 				MoveExpressBetweenPackage(id, userInfoDao.get(uid).getReceivePackageID(),pkgId);
-				return Response.ok("¿ì¼şÔËµ¥×´Ì¬´íÎó!\n¿ì¼şĞÅÏ¢Ã»ÔÚÄúµÄÅÉ¼ş°ü¹üÖĞ!").header("EntityClass", "E_ExpressSheet").build(); 
+				return Response.ok("å¿«ä»¶è¿å•çŠ¶æ€é”™è¯¯!\nå¿«ä»¶ä¿¡æ¯æ²¡åœ¨æ‚¨çš„æ´¾ä»¶åŒ…è£¹ä¸­!").header("EntityClass", "E_ExpressSheet").build(); 
 			}
 				
 			nes.setDeliver(String.valueOf(uid));
 			nes.setDeliveTime(getCurrentDate());
 			nes.setStatus(ExpressSheet.STATUS.STATUS_DELIVERY);
 			expressSheetDao.save(nes);
-			//´ÓÅÉ¼ş°ü¹üÖĞÉ¾³ı
+			//ä»æ´¾ä»¶åŒ…è£¹ä¸­åˆ é™¤
 			MoveExpressFromPackage(nes.getID(),pkgId);
-			//¿ì¼şÃ»ÓĞÀúÊ·¼ÇÂ¼,ºÜÄÑ¸ø³öÊÕ¼şºÍ½»¸¶µÄ¼ÇÂ¼
+			//å¿«ä»¶æ²¡æœ‰å†å²è®°å½•,å¾ˆéš¾ç»™å‡ºæ”¶ä»¶å’Œäº¤ä»˜çš„è®°å½•
 			return Response.ok(nes).header("EntityClass", "ExpressSheet").build(); 
 		}
 		catch(Exception e)
@@ -345,7 +412,7 @@ public class DomainService implements IDomainService {
 		}
 	}
 	
-	//½ÓÊÕ°ü¹ü£¬Â·¾¶Î´¸Ä
+	//æ¥æ”¶åŒ…è£¹ï¼Œè·¯å¾„æœªæ”¹
 	@Override
 	public Response acceptExpressSheet(ExpressSheet expressSheet, String UID, Attachment image) {
 		List<ExpressSheet> ExpressSheetList = expressSheetDao.findBy("id", expressSheet.getID(), "id", true);
@@ -354,7 +421,7 @@ public class DomainService implements IDomainService {
 		expressSheet.setStatus(ExpressSheet.STATUS.STATUS_ACCEPT);
 		expressSheet.setDeliver(UID);
 		expressSheet.setDeliveTime(getCurrentDate());
-		// ÉÏ´«µ½·şÎñÆ÷·¢²¼Â·¾¶ÏÂ
+		// ä¸Šä¼ åˆ°æœåŠ¡å™¨å‘å¸ƒè·¯å¾„ä¸‹
 		DataHandler dh = image.getDataHandler();
 		try {
 			DataSource dataSource = dh.getDataSource();
@@ -374,13 +441,14 @@ public class DomainService implements IDomainService {
 		}
 
 		expressSheetDao.update(expressSheet);
-		return Response.ok("ÑéÊÕ³É¹¦").header("EntityClass", "acceptExpressSheet").build();
+		return Response.ok("éªŒæ”¶æˆåŠŸ").header("EntityClass", "acceptExpressSheet").build();
 	}
 	
 	
 	
 	
-	//²éÕÒÄ³µØÇøµÄËùÓĞ°ü¹ü£¬property£¬restrictions,Ñ­»·ÒıÓÃ´ı½â¾ö£¡£¡£¡»Ô½ã¼ÓÓÍ
+	//æŸ¥æ‰¾æŸåœ°åŒºçš„æ‰€æœ‰åŒ…è£¹ï¼Œpropertyï¼Œrestrictions,å¾ªç¯å¼•ç”¨å¾…è§£å†³ï¼ï¼ï¼è¾‰å§åŠ æ²¹
+	//yyhï¼šåœ¨transpackageç±»é‡ŒåŠ äº†ä¿®æ”¹ä»¥åŠæ³¨é‡Šï¼Œä½ çœ‹è¿˜è¡Œä¸è¡Œï¼Œæˆ‘æ²¡çœ‹æ‡‚è¿™ä¸ªå‡½æ•°
 	@Override
 	public List<TransPackage> getTransPackageList(String property,
 			String restrictions, String value) {
@@ -396,14 +464,14 @@ public class DomainService implements IDomainService {
 		return list;
 	}
 	
-	//²éÕÒÄ³¸öidµÄ°ü¹üĞÅÏ¢
+	//æŸ¥æ‰¾æŸä¸ªidçš„åŒ…è£¹ä¿¡æ¯
 	@Override
 	public Response getTransPackage(String id) {
 		TransPackage es = transPackageDao.get(id);
 		return Response.ok(es).header("EntityClass", "TransPackage").build(); 
 	}
 	
-	//´´½¨ĞÂµÄ°ü¹üĞÅÏ¢
+	//åˆ›å»ºæ–°çš„åŒ…è£¹ä¿¡æ¯
 	@Override
 	public Response newTransPackage(String id, int uid) {
 		try{
@@ -420,7 +488,7 @@ public class DomainService implements IDomainService {
 		}
 	}
 	
-	//±£´æ°ü¹üĞÅÏ¢
+	//ä¿å­˜åŒ…è£¹ä¿¡æ¯
 	@Override
 	public Response saveTransPackage(TransPackage obj) {
 		try{
@@ -433,48 +501,48 @@ public class DomainService implements IDomainService {
 		}
 	}
 	
-	//°ü¹ü×ø±êĞÅÏ¢
+	//åŒ…è£¹åæ ‡ä¿¡æ¯
 	@Override
 	public List<PackageRoute> getPackageRouteList(String packageID) {
 		return packageRouteDao.getPackageRouteList(packageID);
 	}
 	
-	// À¿ÊÕ´ò°ü¸ù¾İUID½¨Á¢°ü¹ü£¬»ñµÃreceivePackageID,Î´ÉèÖÃtnºÍsn,¸Äbug
+	// æ½æ”¶æ‰“åŒ…æ ¹æ®UIDå»ºç«‹åŒ…è£¹ï¼Œè·å¾—receivePackageID,æœªè®¾ç½®tnå’Œsn,æ”¹bug
 	@Override
 	public Response getReceivePackageID(String UID, int URull) {
-		// ÉèÖÃreceivePackageIDÎª UID + Ê±¼ä ¹²23Î»
+		// è®¾ç½®receivePackageIDä¸º UID + æ—¶é—´ å…±23ä½
 		String receivePackageID = new StringBuilder(UID).append(System.currentTimeMillis()).toString();
-		// ÉèÖÃuserinfo±íµÄreceivePackageID, URull²¢·µ»ØDptID
+		// è®¾ç½®userinfoè¡¨çš„receivePackageID, URullå¹¶è¿”å›DptID
 		String dptID = userInfoDao.setReceivePackageID(UID, receivePackageID, URull);
 		// System.out.println(dptID);
-		// ÉèÖÃtranspackage²¢¸³ÖµIDºÍTargetNode(=DptID) ²¢±£´æ
+		// è®¾ç½®transpackageå¹¶èµ‹å€¼IDå’ŒTargetNode(=DptID) å¹¶ä¿å­˜
 		TransPackage transPackage = new TransPackage();
 		transPackage.setID(receivePackageID);
 		if (URull == UserInfo.URull.URull_COLLECT) {
 			transPackage.setSourceNode(dptID);
 			transPackage.setTargetNode(dptID);
-			// ÉèÖÃ°ü¹üÎªÀ¿ÊÕ×´Ì¬
+			// è®¾ç½®åŒ…è£¹ä¸ºæ½æ”¶çŠ¶æ€
 			transPackage.setStatus(TransPackage.STATUS.STATUS_COLLECT);
 		} else if (URull == UserInfo.URull.URull_PACKING) {
-			// ÉèÖÃ°ü¹üÎª´ò°ü×´Ì¬
+			// è®¾ç½®åŒ…è£¹ä¸ºæ‰“åŒ…çŠ¶æ€
 			transPackage.setStatus(TransPackage.STATUS.STATUS_CREATED);
 		}
 		transPackage.setCreateTime(getCurrentDate());
 		transPackageDao.save(transPackage);
-		// ÉèÖÃuserspackage
+		// è®¾ç½®userspackage
 		UsersPackage usersPackage = new UsersPackage();
 		usersPackage.setUserU(userInfoDao.get(Integer.parseInt(UID)));
 		usersPackage.setPkg(transPackage);
 		usersPackageDao.save(usersPackage);
 		if (URull == UserInfo.URull.URull_PACKING) {
-			// ´ò°ü·µ»Ø
+			// æ‰“åŒ…è¿”å›
 			return Response.ok(transPackage).header("EntityClass", "PackingPackageID").build();
 		}
-		// Ä¬ÈÏÀ¿ÊÕ·µ»Ø
+		// é»˜è®¤æ½æ”¶è¿”å›
 		return Response.ok(receivePackageID).header("EntityClass", "ReceivePackageID").build();
 	}
 	
-	// gqbÇåÀí¿ìµİÔ±Èı¸öPackageID
+	// gqbæ¸…ç†å¿«é€’å‘˜ä¸‰ä¸ªPackageID
 	@Override
 	public Response cleanPackageID(String UID, String flag) {
 		UserInfo userInfo = userInfoDao.get(Integer.parseInt(UID));
@@ -489,53 +557,52 @@ public class DomainService implements IDomainService {
 			userInfo.setTransPackageID(null);
 		}
 		userInfoDao.update(userInfo);
-		return Response.ok("É¾³ı³É¹¦").header("EntityClass", "PackageID").build();
-
+		return Response.ok("åˆ é™¤æˆåŠŸ").header("EntityClass", "PackageID").build();
 	}
-	// gqb¿ìµİÔ±»ñµÃÈÎÎñÁĞ±í ´ıÍê³É¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£
+	// gqbå¿«é€’å‘˜è·å¾—ä»»åŠ¡åˆ—è¡¨ å¾…å®Œæˆã€‚ã€‚ã€‚ã€‚ã€‚ã€‚ã€‚ã€‚ã€‚ã€‚
 	@Override
 	public List<ExpressSheet> getTaskList(String UID) {
 		List<ExpressSheet> expressSheetList = null;
 		UserInfo userInfo = userInfoDao.get(Integer.parseInt(UID));
-		// »ñµÃÓÃ»§½ÇÉ«
+		// è·å¾—ç”¨æˆ·è§’è‰²
 		int uRull = userInfo.getURull();
 
-		// // »ñÈ¡¿ìµİÔ±ËùÔÚÇøÓòregionCode
+		// // è·å–å¿«é€’å‘˜æ‰€åœ¨åŒºåŸŸregionCode
 		// String regionCode = userInfo.getDptID().substring(0, 6);
 		// List<CustomerInfo> customerInfoList =
 		// customerInfoDao.findByRegionCode(regionCode);
 		// for (CustomerInfo customerInfo : customerInfoList) {
 		// int ID = customerInfo.getID();
-		// // »ñÈ¡senderÎªid ºÍ statusÎª0 µÄ¿ì¼ş
+		// // è·å–senderä¸ºid å’Œ statusä¸º0 çš„å¿«ä»¶
 		// List<ExpressSheet> list = expressSheetDao.findBySenderAndStatus(ID);
 		// expressSheetList.addAll(list);
 		// }
 		return expressSheetList;
 	}	
-	// gqb¿ìµİÔ±²ğ°ü½Ó¿Ú
+	// gqbå¿«é€’å‘˜æ‹†åŒ…æ¥å£
 	@Override
 	public Response unpacking(String UID, String PackageID, float x, float y) {
-		// ¸ù¾İpackageIDÌáÈ¡ÅÉËÍÈËÔ±UID
+		// æ ¹æ®packageIDæå–æ´¾é€äººå‘˜UID
 		int lastUID = usersPackageDao.getUIDByPackageID(PackageID);
 		if (lastUID == 0) {
-			return Response.ok("°ü¹ü²»´æÔÚ").header("EntityClass", "UnpackPackageID").build();
+			return Response.ok("åŒ…è£¹ä¸å­˜åœ¨").header("EntityClass", "UnpackPackageID").build();
 		}
-		// ÉèÖÃ²ğ°üÈËÔ±
+		// è®¾ç½®æ‹†åŒ…äººå‘˜
 		UserInfo userInfo = userInfoDao.get(Integer.parseInt(UID));
 		userInfo.setDelivePackageID(PackageID);
 		userInfo.setURull(UserInfo.URull.URull_UNPACKING);
 		userInfoDao.update(userInfo);
-		// ¸ü¸Ä°ü¹ü×´Ì¬
+		// æ›´æ”¹åŒ…è£¹çŠ¶æ€
 		TransPackage transPackage = transPackageDao.get(PackageID);
-		// °ü¹üÎª·Ö¼ğ×´Ì¬
+		// åŒ…è£¹ä¸ºåˆ†æ‹£çŠ¶æ€
 		transPackage.setStatus(TransPackage.STATUS.STATUS_SORTING);
 		transPackageDao.update(transPackage);
-		// Ìí¼Óµ½usersPackage
+		// æ·»åŠ åˆ°usersPackage
 		UsersPackage usersPackage = new UsersPackage();
 		usersPackage.setUserU(userInfo);
 		usersPackage.setPkg(transPackage);
 		usersPackageDao.save(usersPackage);
-		// Ìí¼Óµ½transHistory
+		// æ·»åŠ åˆ°transHistory
 		TransHistory transHistory = new TransHistory();
 		transHistory.setPkg(transPackage);
 		transHistory.setActTime(getCurrentDate());
@@ -548,7 +615,7 @@ public class DomainService implements IDomainService {
 		return Response.ok(PackageID).header("EntityClass", "UnpackPackageID").build();
 	}
 
-	// gqb¿ìµİÔ±ĞŞ¸ÄĞÅÏ¢
+	// gqbå¿«é€’å‘˜ä¿®æ”¹ä¿¡æ¯
 	@Override
 	public Response changeUserInfo(UserInfo userInfo) {
 		UserInfo oldUserInfo = userInfoDao.get(userInfo.getUID());
@@ -560,14 +627,14 @@ public class DomainService implements IDomainService {
 		return Response.ok(oldUserInfo).header("EntityClass", "UserInfo").build();
 	}
 
-	// gqb»ñÈ¡¿ìµİÔ±ĞÅÏ¢ÁĞ±í
+	// gqbè·å–å¿«é€’å‘˜ä¿¡æ¯åˆ—è¡¨
 	@Override
 	public List<UserInfo> getUserInfoList() {
 		List<UserInfo> list = userInfoDao.getAll("UID", true);
 		return list;
 	}
 
-	// gqb¸ù¾İÊÖ»úºÅ²éÑ¯ÀúÊ·ÔËµ¥
+	// gqbæ ¹æ®æ‰‹æœºå·æŸ¥è¯¢å†å²è¿å•
 	public HashSet<ExpressSheet> getExpressSheetByTelCode(String telCode) {
 		HashSet<ExpressSheet> list = new HashSet<ExpressSheet>();
 		List<CustomerInfo> customerInfos = customerInfoDao.findByTelCode(telCode);
@@ -580,14 +647,14 @@ public class DomainService implements IDomainService {
 		return list;
 	}
 
-	// gqb×ªÔË¸ù¾İID»ñÈ¡²¢¸üĞÂ°ü¹ü
+	// gqbè½¬è¿æ ¹æ®IDè·å–å¹¶æ›´æ–°åŒ…è£¹
 	public Response getTransportPackage(int UID, String PackageId) {
 		TransPackage transPackage = transPackageDao.get(PackageId);
 		if (transPackage == null) {
-			return Response.ok("°ü¹ü²»´æÔÚ").header("EntityClass", "TransPackage").build();
+			return Response.ok("åŒ…è£¹ä¸å­˜åœ¨").header("EntityClass", "TransPackage").build();
 		}
 		if (transPackage.getStatus() != TransPackage.STATUS.STATUS_PACK) {
-			return Response.ok("°ü¹ü×´Ì¬´íÎó").header("EntityClass", "TransPackage").build();
+			return Response.ok("åŒ…è£¹çŠ¶æ€é”™è¯¯").header("EntityClass", "TransPackage").build();
 		}
 		TransHistory transHistory = new TransHistory();
 		transPackage.setStatus(TransPackage.STATUS.STATUS_TRANSPORT);
@@ -597,7 +664,7 @@ public class DomainService implements IDomainService {
 		transHistory.setPkg(transPackage);
 		transHistory.setUIDFrom(usersPackageDao.getUIDByPackageID(PackageId));
 		transHistory.setUIDTo(UID);
-		// ¸ù¾İ°ü¹üÖĞsourceNode»ñµÃ½Úµãx£¬y
+		// æ ¹æ®åŒ…è£¹ä¸­sourceNodeè·å¾—èŠ‚ç‚¹xï¼Œy
 		TransNode transNode = transNodeDao.get(transPackage.getSourceNode());
 		transHistory.setX(transNode.getX());
 		transHistory.setY(transNode.getY());
@@ -627,7 +694,7 @@ public class DomainService implements IDomainService {
 		return Response.ok(transPackage).header("EntityClass", "TransPackage").build();
 	}
 
-	// gqb »ñµÃ×ªÔË°ü¹ü
+	// gqb è·å¾—è½¬è¿åŒ…è£¹
 	@Override
 	public HashSet<TransPackage> getTransPackageList(int UID) {
 		HashSet<TransPackage> set = new HashSet<TransPackage>();
@@ -640,15 +707,15 @@ public class DomainService implements IDomainService {
 		return set;
 	}
 
-	// gqb »ñµÃÅÉËÍ°ü¹ü
+	// gqb è·å¾—æ´¾é€åŒ…è£¹
 	@Override
 	public Response getDeliverPackageID(int UID, String PackageId) {
 		TransPackage transPackage = transPackageDao.get(PackageId);
 		if (transPackage == null) {
-			return Response.ok("°ü¹ü²»´æÔÚ").header("EntityClass", "DeliverPackage").build();
+			return Response.ok("åŒ…è£¹ä¸å­˜åœ¨").header("EntityClass", "DeliverPackage").build();
 		}
 		if (transPackage.getStatus() != TransPackage.STATUS.STATUS_PACK) {
-			return Response.ok("°ü¹ü×´Ì¬´íÎó").header("EntityClass", "DeliverPackage").build();
+			return Response.ok("åŒ…è£¹çŠ¶æ€é”™è¯¯").header("EntityClass", "DeliverPackage").build();
 		}
 		transPackage.setStatus(TransPackage.STATUS.STATUS_DELIVERY);
 		transPackageDao.update(transPackage);
@@ -663,7 +730,7 @@ public class DomainService implements IDomainService {
 		transHistory.setPkg(transPackage);
 		transHistory.setUIDFrom(usersPackageDao.getUIDByPackageID(PackageId));
 		transHistory.setUIDTo(UID);
-		// ¸ù¾İ°ü¹üÖĞsourceNode»ñµÃ½Úµãx£¬y
+		// æ ¹æ®åŒ…è£¹ä¸­sourceNodeè·å¾—èŠ‚ç‚¹xï¼Œy
 		TransNode transNode = transNodeDao.get(transPackage.getSourceNode());
 		transHistory.setX(transNode.getX());
 		transHistory.setY(transNode.getY());
@@ -693,8 +760,8 @@ public class DomainService implements IDomainService {
 	}
 
 	
-	// ny¸ù¾İsendertel,receiverid,expressidÈ¡µÃ¿ì¼ş
-	@Override
+	// nyæ ¹æ®sendertel,receiverid,expressidå–å¾—å¿«ä»¶
+/*	@Override
 	public List<ExpressSheet> getExpressSheetByKindAndID(String kind, String id) {
 
 		List<ExpressSheet> ExpressSheetList = new ArrayList<>();
@@ -724,7 +791,54 @@ public class DomainService implements IDomainService {
 		}
 		return null;
 
+	}*/
+	
+	//æˆ‘çš„å› ä¸ºapplicationcontext.xmlæ²¡æœ‰éƒ¨ç½²å¥½æ‰€ä»¥ç©ºæŒ‡é’ˆï¼Œä¸çŸ¥é“ä½ éƒ¨ç½²å¥½æ²¡æœ‰ï¼Œå¦‚æœè¿˜æŠ¥é”™å°±ç”¨ä¸‹é¢çš„è¿™ä¸ªå‡½æ•°
+	
+	  @Override
+	public List<ExpressSheet> getExpressSheetByKindAndID(String kind, String id) {
+        System.out.println(kind);
+		List<ExpressSheet> ExpressSheetList = new ArrayList<>();
+		if (kind.equals("expressSheetID")) {
+			ExpressSheetList = expressSheetDao.findBy("id", id, "id", true);
+			return ExpressSheetList;
+		} else if (kind.equals("receiveTel")) {
+			System.out.println("1");
+			//List<CustomerInfo> customerInfoList = customerInfoDao.findByTelCode(id);
+			ClassPathXmlApplicationContext resource  = new  ClassPathXmlApplicationContext("applicationContext.xml");; 
+			CustomerInfoDao dao=(CustomerInfoDao) resource.getBean("customerInfoDao");
+			List<CustomerInfo> customerInfoList= dao.findByTelCode(id);
+			for (CustomerInfo customerInfo : customerInfoList) {
+				ExpressSheetList.addAll(expressSheetDao.findByReceiver(customerInfo.getID()));
+			}
+			
+			return ExpressSheetList;
+
+		} else if (kind.equals("senderTel")) {
+			System.out.println("2");
+			 // List<CustomerInfo> customerInfoList = customerInfoDao.findByTelCode(id);
+			ClassPathXmlApplicationContext resource  = new  ClassPathXmlApplicationContext("applicationContext.xml");; 
+			CustomerInfoDao dao=(CustomerInfoDao) resource.getBean("customerInfoDao");
+			List<CustomerInfo> customerInfoList= dao.findByTelCode(id);
+			for (CustomerInfo customerInfo : customerInfoList) {
+			ExpressSheetList.addAll(expressSheetDao.findBySender(customerInfo.getID()));
+			}
+			
+			return ExpressSheetList;
+		} else if (kind.equals("packageID")) {
+			List<TransPackageContent> TransPackageContentList = transPackageContentDao.findByPackageId(id);
+			for (TransPackageContent transPackageContent : TransPackageContentList) {
+				
+				ExpressSheetList
+						.addAll(expressSheetDao.findBy("id", transPackageContent.getExpress().getID(), "id", true));
+			}
+			return ExpressSheetList;
+		}
+		System.out.println("3");
+		return null;
+
 	}
+	 
 	
 	@Override
 	public Response getExpressSheetHistory(String id) {
@@ -739,17 +853,17 @@ public class DomainService implements IDomainService {
 		// System.out.println(ExpressSheetList);
 		ExpressSheet expressSheet = ExpressSheetList.get(0);
 		if (expressSheet.getStatus() == 1) {
-			statusList.add(0,"ÒÑÀ¿ÊÕ");
+			statusList.add(0,"å·²æ½æ”¶");
 			locationList.add(0, "");
 			timeList.add(0, expressSheet.getAccepteTime());
 			idList.add(0, "");
 		} else if (expressSheet.getStatus() == 5) {
-			statusList.add(0,"ÒÑÀ¿ÊÕ");
+			statusList.add(0,"å·²æ½æ”¶");
 			locationList.add(0, "");
 			timeList.add(0, expressSheet.getAccepteTime());
 			idList.add(0, "");
 
-			// ¸ù¾İ¿ì¼şºÅ²¢ÇÒ×´Ì¬Îª1 »ñµÃTransPackageContent,¿ì¼şÔø¾­ÔÚµÄ°ü¹ü
+			// æ ¹æ®å¿«ä»¶å·å¹¶ä¸”çŠ¶æ€ä¸º1 è·å¾—TransPackageContent,å¿«ä»¶æ›¾ç»åœ¨çš„åŒ…è£¹
 			List<TransPackageContent> TransPackageContentList1 = new ArrayList<>();
 			TransPackageContentList1 = transPackageContentDao.findByExpressSheetIdAndStatus1(expressSheet.getID());
 
@@ -761,7 +875,7 @@ public class DomainService implements IDomainService {
 				transPackage1List.addAll(TransPackage1);
 			}
 
-			// ¸ù¾İ¿ì¼şºÅ²¢ÇÒ×´Ì¬Îª0 »ñµÃTransPackageContent,ÏÖÔÚËùÔÚ°ü¹ü
+			// æ ¹æ®å¿«ä»¶å·å¹¶ä¸”çŠ¶æ€ä¸º0 è·å¾—TransPackageContent,ç°åœ¨æ‰€åœ¨åŒ…è£¹
 			List<TransPackageContent> TransPackageContentList0 = transPackageContentDao.findByExpressSheetIdAndStatus0(expressSheet.getID());
 			List<TransPackage> transPackage0List = new ArrayList<>();
 
@@ -776,7 +890,7 @@ public class DomainService implements IDomainService {
 
 			if (transPackage1List != null || !transPackage1List.isEmpty()) {
 
-				// ¿ì¼şÔø¾­´ı¹ıµÄ°ü¹ü
+				// å¿«ä»¶æ›¾ç»å¾…è¿‡çš„åŒ…è£¹
 				for (TransPackage transPackage : transPackage1List) {
 					// for (TransPackage transPackage : transPackage0List) {
 					String sourceNodeId = transPackage.getSourceNode();
@@ -788,12 +902,12 @@ public class DomainService implements IDomainService {
 					System.out.println(sourceNodeList);
 					List<TransNode> targetNodeList = transNodeDao.findByRegionCode(targetNode);
 
-					// °ü¹üÀúÊ·
+					// åŒ…è£¹å†å²
 					List<TransHistory> findByPackageIdList = transHistoryDao.findByPackageIdList(transPackage.getID());
 
 					for (int i = 0; i < findByPackageIdList.size(); i++) {
 						timeList.add(findByPackageIdList.get(i).getActTime());
-						// ×ª½ÓÈË
+						// è½¬æ¥äºº
 						int uidFrom = findByPackageIdList.get(i).getUIDFrom();
 						UserInfo uidFromUserInfo = userInfoDao.findByID(uidFrom);
 						int uidTo = findByPackageIdList.get(i).getUIDTo();
@@ -801,20 +915,20 @@ public class DomainService implements IDomainService {
 
 						if (findByPackageIdList.size() == 2) {
 							if (i != 0) {
-								statusList.add("ÒÑ·Ö¼ğ ,¿ì¼şÔÚ" + sourceNodeList.get(0).getNodeName() + ",×¼±¸ÔËÍùÏÂÒ»Õ¾:   "
-										+ targetNodeList.get(0).getNodeName() + "	,ÓÉ" + uidFromUserInfo.getName()
-										+ "(" + uidFromUserInfo.getTelCode() + ")" + "½»½Ó¸ø:" + uidToUserInfo.getName()
+								statusList.add("å·²åˆ†æ‹£ ,å¿«ä»¶åœ¨" + sourceNodeList.get(0).getNodeName() + ",å‡†å¤‡è¿å¾€ä¸‹ä¸€ç«™:   "
+										+ targetNodeList.get(0).getNodeName() + "	,ç”±" + uidFromUserInfo.getName()
+										+ "(" + uidFromUserInfo.getTelCode() + ")" + "äº¤æ¥ç»™:" + uidToUserInfo.getName()
 										+ "(" + uidToUserInfo.getTelCode() + ")");
 							} else {
-								statusList.add("ÒÑ×ªÔË,¿ì¼şÔÚ" + sourceNodeList.get(0).getNodeName() + ",×¼±¸ÔËÍùÏÂÒ»Õ¾:   "
-										+ targetNodeList.get(0).getNodeName() + "	,ÓÉ" + uidFromUserInfo.getName()
-										+ "(" + uidFromUserInfo.getTelCode() + ")" + "½»½Ó¸ø:" + uidToUserInfo.getName()
+								statusList.add("å·²è½¬è¿,å¿«ä»¶åœ¨" + sourceNodeList.get(0).getNodeName() + ",å‡†å¤‡è¿å¾€ä¸‹ä¸€ç«™:   "
+										+ targetNodeList.get(0).getNodeName() + "	,ç”±" + uidFromUserInfo.getName()
+										+ "(" + uidFromUserInfo.getTelCode() + ")" + "äº¤æ¥ç»™:" + uidToUserInfo.getName()
 										+ "(" + uidToUserInfo.getTelCode() + ")");
 							}
 						} else {
-							statusList.add("ÒÑ·Ö¼ğ ,¿ì¼şÔÚ" + sourceNodeList.get(0).getNodeName() + ",×¼±¸ÔËÍùÏÂÒ»Õ¾:   "
-									+ targetNodeList.get(0).getNodeName() + "	,ÓÉ" + uidFromUserInfo.getName() + "("
-									+ uidFromUserInfo.getTelCode() + ")" + "½»½Ó¸ø:" + uidToUserInfo.getName() + "("
+							statusList.add("å·²åˆ†æ‹£ ,å¿«ä»¶åœ¨" + sourceNodeList.get(0).getNodeName() + ",å‡†å¤‡è¿å¾€ä¸‹ä¸€ç«™:   "
+									+ targetNodeList.get(0).getNodeName() + "	,ç”±" + uidFromUserInfo.getName() + "("
+									+ uidFromUserInfo.getTelCode() + ")" + "äº¤æ¥ç»™:" + uidToUserInfo.getName() + "("
 									+ uidToUserInfo.getTelCode() + ")");
 						}
 
@@ -826,7 +940,7 @@ public class DomainService implements IDomainService {
 				}
 			}
 
-			// ¿ì¼şÏÖÔÚËùÔÚ°ü¹ü
+			// å¿«ä»¶ç°åœ¨æ‰€åœ¨åŒ…è£¹
 			// TransPackage transPackageNow = transPackage1List.get(0);
 			TransPackage transPackageNow = transPackage0List.get(0);
 			String sourceNodeId = transPackageNow.getSourceNode();
@@ -835,7 +949,7 @@ public class DomainService implements IDomainService {
 			String targetNode = targetNodeId.substring(0, targetNodeId.length() - 2);
 			List<TransNode> sourceNodeList = transNodeDao.findByRegionCode(sourceNode);
 			List<TransNode> targetNodeList = transNodeDao.findByRegionCode(targetNode);
-			// °ü¹üÀúÊ·
+			// åŒ…è£¹å†å²
 			// TransHistory transHistory =
 			// transHistoryDao.findByPackageId(transPackageNow.getID());
 			// if (transHistory == null) {
@@ -843,19 +957,19 @@ public class DomainService implements IDomainService {
 			// }
 
 			// *****************************************
-			statusList.add("ÒÑÅÉËÍ");
+			statusList.add("å·²æ´¾é€");
 			locationList.add("");
 			timeList.add(expressSheet.getDeliveTime());
 			idList.add("");
 
 		} else {
 
-			statusList.add(0,"ÒÑÀ¿ÊÕ");
+			statusList.add(0,"å·²æ½æ”¶");
 			locationList.add(0, "");
 			timeList.add(0, expressSheet.getAccepteTime());
 			idList.add(0, "");
 
-			// ¸ù¾İ¿ì¼şºÅ²¢ÇÒ×´Ì¬Îª1 »ñµÃTransPackageContent,¿ì¼şÔø¾­ÔÚµÄ°ü¹ü
+			// æ ¹æ®å¿«ä»¶å·å¹¶ä¸”çŠ¶æ€ä¸º1 è·å¾—TransPackageContent,å¿«ä»¶æ›¾ç»åœ¨çš„åŒ…è£¹
 			List<TransPackageContent> TransPackageContentList1 = new ArrayList<>();
 			TransPackageContentList1 = transPackageContentDao.findByExpressSheetIdAndStatus1(expressSheet.getID());
 
@@ -867,7 +981,7 @@ public class DomainService implements IDomainService {
 				transPackage1List.addAll(TransPackage1);
 			}
 
-			// ¸ù¾İ¿ì¼şºÅ²¢ÇÒ×´Ì¬Îª0 »ñµÃTransPackageContent,ÏÖÔÚËùÔÚ°ü¹ü
+			// æ ¹æ®å¿«ä»¶å·å¹¶ä¸”çŠ¶æ€ä¸º0 è·å¾—TransPackageContent,ç°åœ¨æ‰€åœ¨åŒ…è£¹
 			List<TransPackageContent> TransPackageContentList0 = transPackageContentDao
 					.findByExpressSheetIdAndStatus0(expressSheet.getID());
 			List<TransPackage> transPackage0List = new ArrayList<>();
@@ -883,7 +997,7 @@ public class DomainService implements IDomainService {
 
 			if (transPackage1List != null || !transPackage1List.isEmpty()) {
 
-				// ¿ì¼şÔø¾­´ı¹ıµÄ°ü¹ü
+				// å¿«ä»¶æ›¾ç»å¾…è¿‡çš„åŒ…è£¹
 				for (TransPackage transPackage : transPackage1List) {
 					// for (TransPackage transPackage : transPackage0List) {
 					String sourceNodeId = transPackage.getSourceNode();
@@ -895,14 +1009,14 @@ public class DomainService implements IDomainService {
 					System.out.println(sourceNodeList);
 					List<TransNode> targetNodeList = transNodeDao.findByRegionCode(targetNode);
 
-					// °ü¹üÀúÊ·
+					// åŒ…è£¹å†å²
 					List<TransHistory> findByPackageIdList = transHistoryDao.findByPackageIdList(transPackage.getID());
 
 					for (int i = 0; i < findByPackageIdList.size(); i++) {
 						System.out.println(findByPackageIdList.size()
 								+ "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 						timeList.add(findByPackageIdList.get(i).getActTime());
-						// ×ª½ÓÈË
+						// è½¬æ¥äºº
 						int uidFrom = findByPackageIdList.get(i).getUIDFrom();
 						UserInfo uidFromUserInfo = userInfoDao.findByID(uidFrom);
 						int uidTo = findByPackageIdList.get(i).getUIDTo();
@@ -910,20 +1024,20 @@ public class DomainService implements IDomainService {
 
 						if (findByPackageIdList.size() == 2) {
 							if (i != 0) {
-								statusList.add("ÒÑ·Ö¼ğ ,¿ì¼şÔÚ" + sourceNodeList.get(0).getNodeName() + ",×¼±¸ÔËÍùÏÂÒ»Õ¾:   "
-										+ targetNodeList.get(0).getNodeName() + "	,ÓÉ" + uidFromUserInfo.getName()
-										+ "(" + uidFromUserInfo.getTelCode() + ")" + "½»½Ó¸ø:" + uidToUserInfo.getName()
+								statusList.add("å·²åˆ†æ‹£ ,å¿«ä»¶åœ¨" + sourceNodeList.get(0).getNodeName() + ",å‡†å¤‡è¿å¾€ä¸‹ä¸€ç«™:   "
+										+ targetNodeList.get(0).getNodeName() + "	,ç”±" + uidFromUserInfo.getName()
+										+ "(" + uidFromUserInfo.getTelCode() + ")" + "äº¤æ¥ç»™:" + uidToUserInfo.getName()
 										+ "(" + uidToUserInfo.getTelCode() + ")");
 							} else {
-								statusList.add("ÒÑ×ªÔË,¿ì¼şÔÚ" + sourceNodeList.get(0).getNodeName() + ",×¼±¸ÔËÍùÏÂÒ»Õ¾:   "
-										+ targetNodeList.get(0).getNodeName() + "	,ÓÉ" + uidFromUserInfo.getName()
-										+ "(" + uidFromUserInfo.getTelCode() + ")" + "½»½Ó¸ø:" + uidToUserInfo.getName()
+								statusList.add("å·²è½¬è¿,å¿«ä»¶åœ¨" + sourceNodeList.get(0).getNodeName() + ",å‡†å¤‡è¿å¾€ä¸‹ä¸€ç«™:   "
+										+ targetNodeList.get(0).getNodeName() + "	,ç”±" + uidFromUserInfo.getName()
+										+ "(" + uidFromUserInfo.getTelCode() + ")" + "äº¤æ¥ç»™:" + uidToUserInfo.getName()
 										+ "(" + uidToUserInfo.getTelCode() + ")");
 							}
 						} else {
-							statusList.add("ÒÑ·Ö¼ğ ,¿ì¼şÔÚ" + sourceNodeList.get(0).getNodeName() + ",×¼±¸ÔËÍùÏÂÒ»Õ¾:   "
-									+ targetNodeList.get(0).getNodeName() + "	,ÓÉ" + uidFromUserInfo.getName() + "("
-									+ uidFromUserInfo.getTelCode() + ")" + "½»½Ó¸ø:" + uidToUserInfo.getName() + "("
+							statusList.add("å·²åˆ†æ‹£ ,å¿«ä»¶åœ¨" + sourceNodeList.get(0).getNodeName() + ",å‡†å¤‡è¿å¾€ä¸‹ä¸€ç«™:   "
+									+ targetNodeList.get(0).getNodeName() + "	,ç”±" + uidFromUserInfo.getName() + "("
+									+ uidFromUserInfo.getTelCode() + ")" + "äº¤æ¥ç»™:" + uidToUserInfo.getName() + "("
 									+ uidToUserInfo.getTelCode() + ")");
 						}
 
@@ -933,7 +1047,7 @@ public class DomainService implements IDomainService {
 					}
 				}
 
-				// ¿ì¼şÏÖÔÚËùÔÚ°ü¹ü
+				// å¿«ä»¶ç°åœ¨æ‰€åœ¨åŒ…è£¹
 				// TransPackage transPackageNow = transPackage1List.get(0);
 				TransPackage transPackageNow = transPackage0List.get(0);
 				String sourceNodeId = transPackageNow.getSourceNode();
@@ -942,7 +1056,7 @@ public class DomainService implements IDomainService {
 				String targetNode = targetNodeId.substring(0, targetNodeId.length() - 2);
 				List<TransNode> sourceNodeList = transNodeDao.findByRegionCode(sourceNode);
 				List<TransNode> targetNodeList = transNodeDao.findByRegionCode(targetNode);
-				// °ü¹üÀúÊ·
+				// åŒ…è£¹å†å²
 				// TransHistory transHistory =
 				// transHistoryDao.findByPackageId(transPackageNow.getID());
 				// if (transHistory == null) {
@@ -954,7 +1068,7 @@ public class DomainService implements IDomainService {
 					System.out.println(findByPackageIdList.size()
 							+ "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 					timeList.add(findByPackageIdList.get(i).getActTime());
-					// ×ª½ÓÈË
+					// è½¬æ¥äºº
 					int uidFrom = findByPackageIdList.get(i).getUIDFrom();
 					UserInfo uidFromUserInfo = userInfoDao.findByID(uidFrom);
 					int uidTo = findByPackageIdList.get(i).getUIDTo();
@@ -962,20 +1076,20 @@ public class DomainService implements IDomainService {
 
 					if (findByPackageIdList.size() == 2) {
 						if (i != 0) {
-							statusList.add("ÒÑ·Ö¼ğ ,¿ì¼şÔÚ" + sourceNodeList.get(0).getNodeName() + ",×¼±¸ÔËÍùÏÂÒ»Õ¾:   "
-									+ targetNodeList.get(0).getNodeName() + "	,ÓÉ" + uidFromUserInfo.getName()
-									+ "(" + uidFromUserInfo.getTelCode() + ")" + "½»½Ó¸ø:" + uidToUserInfo.getName()
+							statusList.add("å·²åˆ†æ‹£ ,å¿«ä»¶åœ¨" + sourceNodeList.get(0).getNodeName() + ",å‡†å¤‡è¿å¾€ä¸‹ä¸€ç«™:   "
+									+ targetNodeList.get(0).getNodeName() + "	,ç”±" + uidFromUserInfo.getName()
+									+ "(" + uidFromUserInfo.getTelCode() + ")" + "äº¤æ¥ç»™:" + uidToUserInfo.getName()
 									+ "(" + uidToUserInfo.getTelCode() + ")");
 						} else {
-							statusList.add("ÒÑ×ªÔË,¿ì¼şÔÚ" + sourceNodeList.get(0).getNodeName() + ",×¼±¸ÔËÍùÏÂÒ»Õ¾:   "
-									+ targetNodeList.get(0).getNodeName() + "	,ÓÉ" + uidFromUserInfo.getName()
-									+ "(" + uidFromUserInfo.getTelCode() + ")" + "½»½Ó¸ø:" + uidToUserInfo.getName()
+							statusList.add("å·²è½¬è¿,å¿«ä»¶åœ¨" + sourceNodeList.get(0).getNodeName() + ",å‡†å¤‡è¿å¾€ä¸‹ä¸€ç«™:   "
+									+ targetNodeList.get(0).getNodeName() + "	,ç”±" + uidFromUserInfo.getName()
+									+ "(" + uidFromUserInfo.getTelCode() + ")" + "äº¤æ¥ç»™:" + uidToUserInfo.getName()
 									+ "(" + uidToUserInfo.getTelCode() + ")");
 						}
 					} else {
-						statusList.add("ÒÑ·Ö¼ğ ,¿ì¼şÔÚ" + sourceNodeList.get(0).getNodeName() + ",×¼±¸ÔËÍùÏÂÒ»Õ¾:   "
-								+ targetNodeList.get(0).getNodeName() + "	,ÓÉ" + uidFromUserInfo.getName() + "("
-								+ uidFromUserInfo.getTelCode() + ")" + "½»½Ó¸ø:" + uidToUserInfo.getName() + "("
+						statusList.add("å·²åˆ†æ‹£ ,å¿«ä»¶åœ¨" + sourceNodeList.get(0).getNodeName() + ",å‡†å¤‡è¿å¾€ä¸‹ä¸€ç«™:   "
+								+ targetNodeList.get(0).getNodeName() + "	,ç”±" + uidFromUserInfo.getName() + "("
+								+ uidFromUserInfo.getTelCode() + ")" + "äº¤æ¥ç»™:" + uidToUserInfo.getName() + "("
 								+ uidToUserInfo.getTelCode() + ")");
 					}
 
@@ -1002,21 +1116,21 @@ public class DomainService implements IDomainService {
 	@Override
 	public String getRegionNameByID(int id) {
 		String region = regionDao.getRegionNameByID(String.valueOf(id));
-		System.out.println(region);// ±±¾©ÊĞÊĞÏ½ÇøÎ÷³ÇÇø
+		System.out.println(region);// åŒ—äº¬å¸‚å¸‚è¾–åŒºè¥¿åŸåŒº
 		return region;
 	}
 	
 	@Override
 	public List<PackageRoute> getExpressSheetRoute(String ExpressID) {
-		// ¸ù¾İ¿ì¼şid²éÑ¯ËùÓĞÍ¾¾­°ü¹üidµÄÁĞ±í£¨TransPackageContent£©
+		// æ ¹æ®å¿«ä»¶idæŸ¥è¯¢æ‰€æœ‰é€”ç»åŒ…è£¹idçš„åˆ—è¡¨ï¼ˆTransPackageContentï¼‰
 		String sql0 = "ExpressID=" + ExpressID;
 		List<TransPackageContent> transPackageContents = transPackageContentDao.findBy("SN", true,Restrictions.sqlRestriction(sql0));
 		// findBy("Express", Restrictions.sqlRestriction(sql0), "SN", true);
 		List<PackageRoute> rout = new ArrayList<PackageRoute>();
-		Iterator<TransPackageContent> it = transPackageContents.iterator(); // ÉèÖÃµü´úÆ÷
+		Iterator<TransPackageContent> it = transPackageContents.iterator(); // è®¾ç½®è¿­ä»£å™¨
 
 		while (it.hasNext()) {
-			// »ñµÃ°ü¹üµ¥µÄËùÓĞÂ·¾¶
+			// è·å¾—åŒ…è£¹å•çš„æ‰€æœ‰è·¯å¾„
 
 			List<PackageRoute> packageRouts = packageRouteDao.findBy("pkg", it.next().getPkg(), "tm", true);
 			Iterator<PackageRoute> it1 = packageRouts.iterator();
@@ -1031,10 +1145,10 @@ public class DomainService implements IDomainService {
 	// ===============================================================================================
 	@Override
 	public List<PackageRoute> setPackageRoute(int UID, float x, float y) {
-		// »ñÈ¡ÓÃ»§µÄĞÅÏ¢£¬ÄÃµ½µ±Ç°ÓÃ»§µÄ½ÇÉ«
+		// è·å–ç”¨æˆ·çš„ä¿¡æ¯ï¼Œæ‹¿åˆ°å½“å‰ç”¨æˆ·çš„è§’è‰²
 		UserInfo userInfo = userInfoDao.findByID(UID);
 		System.out.println("userInfo.getURull()" + userInfo.getURull());
-		// »ñÈ¡µ±Ç°ÓÃ»§½ÇÉ«ÏÂµÄËùÓĞ°ü¹ü
+		// è·å–å½“å‰ç”¨æˆ·è§’è‰²ä¸‹çš„æ‰€æœ‰åŒ…è£¹
 		String sql0 = "UserUID=" + UID;
 		List<UsersPackage> userPackage = usersPackageDao.findBy("SN", true, Restrictions.sqlRestriction(sql0));
 		Iterator<UsersPackage> it1 = userPackage.iterator();
@@ -1043,7 +1157,7 @@ public class DomainService implements IDomainService {
 		switch (userInfo.getURull()) {
 
 		case 1:
-			// ²éÑ¯ËùÓĞ°ü¹ü²¢ÅĞ¶Ïµ±Ç°°ü¹ü×´Ì¬ÊÇ·ñÎª4
+			// æŸ¥è¯¢æ‰€æœ‰åŒ…è£¹å¹¶åˆ¤æ–­å½“å‰åŒ…è£¹çŠ¶æ€æ˜¯å¦ä¸º4
 			while (it1.hasNext()) {
 				TransPackage tr = transPackageDao.get(it1.next().getPkg().getID());
 				if (tr.getStatus() == 4) {
@@ -1061,7 +1175,7 @@ public class DomainService implements IDomainService {
 		case 2:
 			while (it1.hasNext()) {
 				TransPackage tr = transPackageDao.get(it1.next().getPkg().getID());
-				// ²ğ°üÈËÔ±£¬Ö»²ğ×´Ì¬Îª5µÄ°ü¹ü£¬È»ºóµÇ¼ÇÎ»ÖÃ
+				// æ‹†åŒ…äººå‘˜ï¼Œåªæ‹†çŠ¶æ€ä¸º5çš„åŒ…è£¹ï¼Œç„¶åç™»è®°ä½ç½®
 				if (tr.getStatus() == 3) {
 					PackageRoute packageRoute = new PackageRoute();
 					packageRoute.setPkg(tr);
@@ -1074,10 +1188,10 @@ public class DomainService implements IDomainService {
 			}
 			break;
 		case 3:
-			// ×ªÔË
+			// è½¬è¿
 			while (it1.hasNext()) {
 				TransPackage tr = transPackageDao.get(it1.next().getPkg().getID());
-				// ²ğ°üÈËÔ±£¬Ö»²ğ×´Ì¬Îª5µÄ°ü¹ü£¬È»ºóµÇ¼ÇÎ»ÖÃ
+				// æ‹†åŒ…äººå‘˜ï¼Œåªæ‹†çŠ¶æ€ä¸º5çš„åŒ…è£¹ï¼Œç„¶åç™»è®°ä½ç½®
 				if (tr.getStatus() == 2) {
 					PackageRoute packageRoute = new PackageRoute();
 					packageRoute.setPkg(tr);
@@ -1090,10 +1204,10 @@ public class DomainService implements IDomainService {
 			}
 			break;
 		case 4:
-			// ÅÉËÍ
+			// æ´¾é€
 			while (it1.hasNext()) {
 				TransPackage tr = transPackageDao.get(it1.next().getPkg().getID());
-				// ²ğ°üÈËÔ±£¬Ö»²ğ×´Ì¬Îª5µÄ°ü¹ü£¬È»ºóµÇ¼ÇÎ»ÖÃ
+				// æ‹†åŒ…äººå‘˜ï¼Œåªæ‹†çŠ¶æ€ä¸º5çš„åŒ…è£¹ï¼Œç„¶åç™»è®°ä½ç½®
 				if (tr.getStatus() == 5) {
 					PackageRoute packageRoute = new PackageRoute();
 					packageRoute.setPkg(tr);
@@ -1106,10 +1220,10 @@ public class DomainService implements IDomainService {
 			}
 			break;
 		case 5:
-			// ´ò°ü
+			// æ‰“åŒ…
 			while (it1.hasNext()) {
 				TransPackage tr = transPackageDao.get(it1.next().getPkg().getID());
-				// ²ğ°üÈËÔ±£¬Ö»²ğ×´Ì¬Îª5µÄ°ü¹ü£¬È»ºóµÇ¼ÇÎ»ÖÃ
+				// æ‹†åŒ…äººå‘˜ï¼Œåªæ‹†çŠ¶æ€ä¸º5çš„åŒ…è£¹ï¼Œç„¶åç™»è®°ä½ç½®
 				if (tr.getStatus() == 1) {
 					PackageRoute packageRoute = new PackageRoute();
 					packageRoute.setPkg(tr);
@@ -1132,9 +1246,10 @@ public class DomainService implements IDomainService {
 		String region = regionDao.getRegionNameByID(id);
 		return null;
 	}
-
+    //ä¿®æ”¹äº†ä¸€ä¸‹,save->savein
 	@Override
 	public Response CreatePackage(String sn, String tn) {
+		try {
 		TransPackage transPackage = new TransPackage();
 		long currentTimeMillis = System.currentTimeMillis();
 		// transPackage.setID(UUID.randomUUID().toString().substring(0, 12));
@@ -1144,8 +1259,13 @@ public class DomainService implements IDomainService {
 		Date date = new Date();
 		transPackage.setCreateTime(date);
 		transPackage.setStatus(0);
-		transPackageDao.save(transPackage);
+		transPackageDao.savein(transPackage);
 		return Response.ok(transPackage).header("EntityClass", "transpackage").build();
+		}
+		catch(Exception e)
+		{
+		return Response.serverError().entity(e.getMessage()).build();
+		}
 	}
 
 	@Override
@@ -1203,13 +1323,13 @@ public class DomainService implements IDomainService {
 	}
 
 	@Override
-	// ny»ñµÃµÈ´ıÀ¿ÊÕºÍÒÑ¾­Íê³ÉÀ¿ÊÕ¿ì¼ş
+	// nyè·å¾—ç­‰å¾…æ½æ”¶å’Œå·²ç»å®Œæˆæ½æ”¶å¿«ä»¶
 	// *****************************************************************************************************
 	public List<ExpressSheet> getExpressListWaitReceiveAndComplete(String regionCode, String packageId) {
 		List<ExpressSheet> list = new ArrayList<ExpressSheet>();
-		// ÒÑ¾­Íê³ÉÀ¿ÊÕµÄ
+		// å·²ç»å®Œæˆæ½æ”¶çš„
 		list.addAll(getExpressListInPackage(packageId));
-		// µÈ´ıÀ¿ÊÕµÄ
+		// ç­‰å¾…æ½æ”¶çš„
 		String dptid00 = regionCode;
 		List<CustomerInfo> customerInfosList = customerInfoDao.findByRegionCode(dptid00);
 		if (customerInfosList != null && !customerInfosList.isEmpty()) {
@@ -1234,7 +1354,7 @@ public class DomainService implements IDomainService {
 		return list;
 	}
 	
-	//=======================²¹³äÂß¼­======================
+	//=======================è¡¥å……é€»è¾‘======================
 	//
 	@Override
 	public Response updateUserInfo(UserInfo userInfo) {
@@ -1244,7 +1364,9 @@ public class DomainService implements IDomainService {
 
 	@Override
 	public Response getUserInfo(int id) {
-		UserInfo us = userInfoDao.findByID(id);
+		//UserInfo us = userInfoDao.findByID(id);
+		//return Response.ok(us).header("EntityClass", "us").build();
+		UserInfo us = userInfoDao.get(id);
 		return Response.ok(us).header("EntityClass", "us").build();
 	}
 	@Override
@@ -1252,11 +1374,60 @@ public class DomainService implements IDomainService {
 		
 		CustomerInfo cstm = customerInfoDao.get(Integer.parseInt(id));
 //		try{
-//			cstm.setRegionString(regionDao.getRegionNameByID(cstm.getRegionCode()));	//Õâ²¿·Ö¹¦ÄÜ·Åµ½DAOÀïÈ¥ÁË
+//			cstm.setRegionString(regionDao.getRegionNameByID(cstm.getRegionCode()));	//è¿™éƒ¨åˆ†åŠŸèƒ½æ”¾åˆ°DAOé‡Œå»äº†
 //		}catch(Exception e){}
 		return Response.ok(cstm).header("EntityClass", "CustomerInfo").build();
 		
 		
+	}
+	
+	//=======================yyhè¡¥å……é€»è¾‘======================
+	//é€šè¿‡åŒ…è£¹æŸ¥è¯¢å¿«ä»¶
+	
+	@Override
+	public List<ExpressSheet> getExpressSheetBypkgID(String id)
+	{
+		List<ExpressSheet> ExpressSheetList = new ArrayList<>();
+		List<TransPackageContent> TransPackageContentList = transPackageContentDao.findByPackageId(id);
+		for (TransPackageContent transPackageContent : TransPackageContentList) {	
+			ExpressSheetList
+					.addAll(expressSheetDao.findBy("id", transPackageContent.getExpress().getID(), "id", true));
+		}
+		return ExpressSheetList;
+	}
+	
+	//æ³¨å†Œwebçš„ç®¡ç†å‘˜user
+	@Override
+	public Response saveUseInfo(UserInfo obj) {
+		try{
+			userInfoDao.save(obj);			
+			return Response.ok(obj).header("EntityClass", "R_UserInfo").build(); 
+		}
+		catch(Exception e)
+		{
+			return Response.serverError().entity(e.getMessage()).build(); 
+		}
+	}
+	//é¡¾å®¢æŸ¥è¯¢å¿«ä»¶å¾—åˆ°å¿«é€’å‘˜è”ç³»æ–¹å¼
+	@Override
+	public List<UserInfo> getUserInfoList(int id) {
+		UserInfo us = userInfoDao.get(id);
+		List<UserInfo> uu= new ArrayList<UserInfo>();
+		uu.add(us);
+		return uu;
+	}
+	
+	//é€šè¿‡åŒ…è£¹å•å·æ‰¾åˆ°è½¬è¿åŸä¿¡æ¯yyh  4/2
+	public Response tansuser(String pkg) {
+		// TODO Auto-generated method stub
+		try{
+			UserInfo us= userInfoDao.findBytranspkg(pkg);
+			return Response.ok(us).header("EntityClass", "R_UserInfo").build();
+		}
+		catch(Exception e)
+		{
+			return Response.serverError().entity(e.getMessage()).build(); 
+		}
 	}
 
 	@Override

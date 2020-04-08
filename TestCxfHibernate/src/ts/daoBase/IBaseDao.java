@@ -51,6 +51,8 @@ public interface IBaseDao<T,PK extends Serializable> {
      * 保存对象.
      */
     public void save(T entity);
+    //yyh添加的，用于保存包裹
+    public void savein(T entity);
     
     /**
      * 在不同的session中关联修改过的托管对象

@@ -3,8 +3,6 @@ package ts.daoImpl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.hibernate.criterion.Restrictions;
 
 import ts.daoBase.BaseDao;
@@ -14,7 +12,7 @@ public class TransPackageContentDao extends BaseDao<TransPackageContent,Integer>
 	public TransPackageContentDao(){
 		super(TransPackageContent.class);
 	}
-	@XmlTransient
+	
 	public TransPackageContent get(String expressId, String packageId){
 		List<TransPackageContent> list  = new ArrayList<TransPackageContent>();
 		list = super.findBy("SN", true, 

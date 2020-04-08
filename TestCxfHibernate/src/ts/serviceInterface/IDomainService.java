@@ -62,8 +62,8 @@ public interface IDomainService {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    @Path("/saveExpressSheet") 
-	public Response saveExpressSheet(ExpressSheet obj);
+    @Path("/saveinExpressSheet") 
+	public Response saveinExpressSheet(ExpressSheet obj);
     
     //接收用户快递单？？？返回神马？
     @GET
@@ -315,4 +315,40 @@ public interface IDomainService {
 	@Path("/getExpressListWaitReceiveAndComplete/{dptid04}/{pkgId}")
 	public List<ExpressSheet>  getExpressListWaitReceiveAndComplete(@PathParam("dptid04") String dptId,
 			@PathParam("pkgId") String pkgId);
+	
+	//yyh补充*******************3/31
+	//通过包裹id返回快件对象
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Path("/getExpressSheetBypkgID/{id}")
+	public List<ExpressSheet> getExpressSheetBypkgID(@PathParam("id") String id);
+	
+	//yyh的保存快件
+	@POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Path("/saveExpressSheet") 
+	public Response saveExpressSheet(ExpressSheet obj);
+	
+	//yyh的注册用户
+	 @POST
+	    @Consumes(MediaType.APPLICATION_JSON)
+	    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	    @Path("/saveUseInfo") 
+		public Response saveUseInfo(UserInfo obj);
+	 
+	 //yyh增加查询快递员信息4/1
+	 @GET
+	    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	    @Path("/getUserInfoList/{id}") 
+		public List<UserInfo> getUserInfoList(@PathParam("id")int id);
+	 
+	 //yyh通过包裹单号找到转运原信息
+
+		@GET
+		@Consumes(MediaType.APPLICATION_JSON)
+		@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+		@Path("/tansuser/{id}")
+		public Response tansuser(@PathParam("id") String pkg);
 }

@@ -18,6 +18,7 @@ import java.util.Date;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 @Entity
 @org.hibernate.annotations.Proxy(lazy=false)
 @Table(name="TransPackage")
@@ -111,7 +112,8 @@ public class TransPackage implements Serializable {
 	public Integer getStatus() {
 		return status;
 	}
-	
+	//只要牵扯到循环在get方法加这个注释
+	@XmlTransient
 	public void setRoute(java.util.Set<PackageRoute> value) {
 		this.route = value;
 	}
@@ -120,7 +122,7 @@ public class TransPackage implements Serializable {
 		return route;
 	}
 	
-	
+	@XmlTransient
 	public void setUser(UsersPackage value) {
 		this.user = value;
 	}
@@ -128,7 +130,7 @@ public class TransPackage implements Serializable {
 	public UsersPackage getUser() {
 		return user;
 	}
-	
+	@XmlTransient
 	public void setContent(java.util.Set<TransPackageContent> value) {
 		this.content = value;
 	}
@@ -137,7 +139,7 @@ public class TransPackage implements Serializable {
 		return content;
 	}
 	
-	
+	@XmlTransient
 	public void setHistory(java.util.Set<TransHistory> value) {
 		this.history = value;
 	}
